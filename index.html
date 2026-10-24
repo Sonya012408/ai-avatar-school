@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Справочник для новичка: основы промтинга, промт-роли, исходники в ChatGPT, сервисы Krea, Grok, Gemini, HeyGen, Syntx и ElevenLabs, оплата, диагностика и план на 14 дней.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Школа AI-аватаров">
+<meta property="og:description" content="Справочник для новичка: основы промтинга, промт-роли, исходники в ChatGPT, сервисы Krea, Grok, Gemini, HeyGen, Syntx и ElevenLabs, оплата, диагностика и план на 14 дней.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A6B61'/%3E%3Ccircle cx='32' cy='26' r='9' fill='%23fff'/%3E%3Cpath d='M14 52c2-11 10-16 18-16s16 5 18 16z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Школа AI-аватаров</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky left index + long reference column; confidence tags on every fact; prompts in dark code blocks with copy */
+:root{
+  --bg:#F1F4F5; --surface:#FFFFFF; --ink:#11181B; --muted:#52616A; --line:#D7DEE2;
+  --accent:#0A6B61; --accent-soft:#DDF1EE; --on-accent:#FFFFFF;
+  --mark:#FFE45C; --on-mark:#1B1700; --warn:#A8480A; --warn-soft:#FBE9DC;
+  --code-bg:#0E181B; --code-fg:#D6F0EA; --code-line:#23383D;
+  --f-display:"Unbounded","Onest",system-ui,sans-serif;
+  --f-body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1315; --surface:#141D20; --ink:#E5EEF0; --muted:#93A4AB; --line:#25343A;
+  --accent:#3FCDB8; --accent-soft:#12302E; --on-accent:#06201C;
+  --mark:#E9CB33; --on-mark:#1B1700; --warn:#F0A065; --warn-soft:#3A2415;
+  --code-bg:#091012; --code-fg:#CFEDE6; --code-line:#1E3237; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1315; --surface:#141D20; --ink:#E5EEF0; --muted:#93A4AB; --line:#25343A;
+  --accent:#3FCDB8; --accent-soft:#12302E; --on-accent:#06201C;
+  --mark:#E9CB33; --on-mark:#1B1700; --warn:#F0A065; --warn-soft:#3A2415;
+  --code-bg:#091012; --code-fg:#CFEDE6; --code-line:#1E3237; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:260px minmax(0,1fr);gap:40px;align-items:start}
+.nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow:auto;padding:16px 0}
+.nav h2{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.nav a{display:block;padding:6px 10px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:14px;line-height:1.35;border-left:2px solid transparent}
+.nav a:hover{background:var(--accent-soft)}
+.nav a.on{border-left-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.brand{font:700 15px/1.2 var(--f-display);margin:0 0 4px}
+.brand small{display:block;font:400 12px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.search{width:100%;margin:12px 0 4px;padding:10px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;font:inherit;font-size:14px}
+.hits{font-size:12px;color:var(--muted);min-height:18px;margin:2px 2px 0}
+.topbar{display:none}
+
+main{padding:28px 0 80px;min-width:0}
+.hero{padding:8px 0 28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.hero h1{font:700 clamp(28px,4.4vw,46px)/1.08 var(--f-display);letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+.hero p.lead{font-size:18px;max-width:62ch;margin:0 0 14px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;color:var(--muted);align-items:center;margin-top:14px}
+.asof{display:inline-block;background:var(--mark);color:var(--on-mark);font:500 13px/1 var(--f-mono);padding:7px 10px;border-radius:4px}
+
+.tag{display:inline-block;font:500 11px/1 var(--f-mono);letter-spacing:.03em;padding:4px 6px;border-radius:4px;border:1px solid;vertical-align:2px;white-space:nowrap}
+.tag.off{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.tag.rev{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.tag.chk{color:var(--on-mark);border-color:var(--on-mark);background:var(--mark)}
+
+section.sec{padding:36px 0 8px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
+section.sec>h2{font:700 clamp(22px,3vw,30px)/1.15 var(--f-display);letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+.kicker{font:500 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+.sub{color:var(--muted);max-width:66ch;margin:0 0 20px}
+h3{font:700 19px/1.25 var(--f-body);margin:30px 0 8px;text-wrap:balance}
+h4{font:600 15px/1.3 var(--f-body);margin:20px 0 6px}
+p{margin:0 0 12px;max-width:72ch}
+ul,ol{margin:0 0 14px;padding-left:22px;max-width:72ch}
+li{margin:3px 0}
+strong{font-weight:600}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+
+.mark{background:var(--mark);color:var(--on-mark);padding:0 3px;border-radius:2px}
+.callout{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);padding:14px 16px;border-radius:8px;margin:16px 0;max-width:76ch}
+.callout.warn{border-left-color:var(--warn)}
+.callout.key{border-left-color:var(--on-mark);background:var(--mark);color:var(--on-mark);border-color:var(--mark)}
+.callout.key a{color:var(--on-mark)}
+.callout>:last-child{margin-bottom:0}
+.callout b.t{display:block;font:600 12px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:14px 0 20px}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.45}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font:600 12px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.cmp td,.cmp th{min-width:150px}
+.cmp td:first-child,.cmp th:first-child{min-width:110px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:14px 0 20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.card h4{margin:0 0 6px}
+.card p,.card ul{font-size:14.5px;margin-bottom:6px}
+.card>:last-child{margin-bottom:0}
+a.card{text-decoration:none;color:var(--ink);display:block}
+a.card:hover{border-color:var(--accent)}
+a.card b{display:block;font-weight:600;margin-bottom:2px}
+a.card span{font-size:13.5px;color:var(--muted)}
+
+.svc{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:6px 20px 14px;margin:22px 0}
+.svc>h3{margin:16px 0 4px;font:700 22px/1.2 var(--f-display);letter-spacing:-.01em}
+.svc .what{color:var(--muted);margin:0 0 12px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.fact{background:var(--bg);border-radius:8px;padding:10px 12px;min-width:0;font-size:14px}
+.fact b{display:block;font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+
+details{border:1px solid var(--line);border-radius:8px;margin:8px 0;background:var(--surface);max-width:80ch}
+.svc details{background:var(--bg)}
+summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:baseline}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font:500 16px/1 var(--f-mono);color:var(--accent);width:14px;flex:none}
+details[open]>summary::before{content:"\2212"}
+details>.in{padding:0 16px 12px}
+details>.in>:last-child{margin-bottom:0}
+.sym{font-weight:500}
+
+.promptbox{position:relative;margin:12px 0 18px;max-width:84ch}
+.promptbox .cap{font:500 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+pre.prompt{margin:0;background:var(--code-bg);color:var(--code-fg);border:1px solid var(--code-line);border-radius:10px;padding:16px 16px 16px;
+  font:400 13px/1.6 var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+pre.prompt .ph{color:#FFE45C}
+.copy{position:absolute;right:8px;top:24px;background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:6px 10px;font:600 12px/1 var(--f-body);cursor:pointer}
+.copy:hover{filter:brightness(1.08)}
+code{font:500 .9em var(--f-mono);background:var(--accent-soft);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:14px 0 20px}
+.flow .st{flex:1 1 150px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;min-width:0;position:relative}
+.flow .st b{display:block;font-size:15px;margin-bottom:3px}
+.flow .st i{display:block;font:500 11px/1 var(--f-mono);color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-style:normal;margin-bottom:8px}
+
+.check{list-style:none;padding:0}
+.check li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);background:var(--surface);border-radius:8px;margin:6px 0}
+.check input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+.prog{font:500 13px/1 var(--f-mono);color:var(--muted);margin:6px 0 10px}
+
+.hidden-sec{display:none}
+footer{border-top:1px solid var(--line);padding:24px 0 8px;color:var(--muted);font-size:13px;max-width:72ch}
+
+.strip{position:relative;margin:24px 0 0;background:var(--code-bg);border-radius:12px;padding:20px 0;overflow:hidden}
+.strip::before,.strip::after{content:"";position:absolute;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,var(--bg) 0 10px,transparent 10px 24px)}
+.strip::before{top:6px}.strip::after{bottom:6px}
+.strip .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:8px 18px}
+.fr{border:1px solid var(--code-line);border-radius:6px;padding:12px 12px 14px;color:var(--code-fg);min-width:0}
+.fr i{display:block;font:500 11px/1 var(--f-mono);font-style:normal;letter-spacing:.14em;color:var(--mark);margin-bottom:8px}
+.fr b{display:block;font:700 16px/1.2 var(--f-body)}
+.fr span{display:block;font-size:12.5px;line-height:1.4;opacity:.78;margin-top:4px}
+.themebtn{font:600 12px/1 var(--f-mono);letter-spacing:.04em;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 10px;border-radius:6px;cursor:pointer;margin-top:10px}
+.themebtn:hover{border-color:var(--accent)}
+@media (max-width:640px){.strip .row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+  .shell{display:block}
+  .topbar{display:flex;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+  .topbar button{flex:none;background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:9px 14px;font:600 14px/1 var(--f-body);cursor:pointer}
+  .topbar .search{margin:0;flex:1;min-width:0}
+  .nav{position:fixed;inset:0 auto 0 0;width:min(300px,86vw);max-height:none;background:var(--surface);z-index:50;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 24px max(16px,env(safe-area-inset-left,0px));transform:translateX(-105%);transition:transform .2s;border-right:1px solid var(--line)}
+  .nav.open{transform:none}
+  .nav .search,.nav .hits{display:none}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:45;display:none}
+  .scrim.on{display:block}
+  section.sec{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
+  .svc{padding:4px 14px 12px}
+  .copy{top:24px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.nav{transition:none}}
+html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="topbar"><button type="button" id="menuBtn" aria-label="Открыть оглавление">Разделы</button><input class="search" id="q2" type="search" placeholder="Поиск по гайду" aria-label="Поиск по гайду"></div>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+<nav class="nav" id="nav" aria-label="Оглавление">
+  <p class="brand">Школа AI-аватаров<small>от чайника до гения AI-контента</small></p>
+  <button type="button" class="themebtn" aria-label="Переключить светлую и тёмную тему">Светлая / тёмная</button>
+  <input class="search" id="q" type="search" placeholder="Поиск: «оплата», «лицо плывёт»…" aria-label="Поиск по гайду">
+  <div class="hits" id="hits"></div>
+  <h2>Старт</h2>
+  <a href="#start">Как пользоваться гайдом</a>
+  <a href="#map">Карта: что чем делаем</a>
+  <h2>База</h2>
+  <a href="#prompting">1. Основы промтинга</a>
+  <a href="#role">2. Промт-роль с анализом</a>
+  <a href="#sources">3. Исходники в ChatGPT</a>
+  <h2>Сервисы</h2>
+  <a href="#services">4. Сравнение сервисов</a>
+  <a href="#krea">Krea</a>
+  <a href="#grok">Grok Imagine</a>
+  <a href="#gemini">Gemini</a>
+  <a href="#heygen">HeyGen</a>
+  <a href="#syntx">Syntx</a>
+  <a href="#eleven">ElevenLabs (голос)</a>
+  <h2>Деньги</h2>
+  <a href="#pay">5. Оплата и покупки</a>
+  <h2>Практика</h2>
+  <a href="#pipelines">6. Рабочие цепочки</a>
+  <a href="#trouble">7. Если что-то пошло не так</a>
+  <a href="#limits">8. Ограничения и риски</a>
+  <a href="#cheat">9. Шпаргалки и словарь</a>
+  <a href="#plan">10. План на 14 дней</a>
+</nav>
+
+<main id="main">
+
+<header class="hero" id="top">
+  <div class="kicker">Справочник для новичка</div>
+  <h1>Школа AI-аватаров</h1>
+  <p class="lead">Здесь есть ответ на любую заминку: как написать промт, какой сервис выбрать, как за него заплатить, что делать, если лицо поплыло или деньги списались, а результата нет.</p>
+  <span class="asof">Данные на 24.10.2026</span>
+  <div class="legend">
+    <span><span class="tag off">официально</span> нашла на странице сервиса</span>
+    <span><span class="tag rev">по обзорам</span> из сторонних статей, цифры могут отличаться</span>
+    <span><span class="tag chk">проверь</span> не подтверждено, сначала тест</span>
+  </div>
+  <div class="strip" aria-hidden="true"><div class="row">
+    <div class="fr"><i>01</i><b>Роль</b><span>ChatGPT пишет промт под сервис</span></div>
+    <div class="fr"><i>02</i><b>Исходник</b><span>Лицо и кадр, реализм закладывается здесь</span></div>
+    <div class="fr"><i>03</i><b>Движение</b><span>Krea, Grok, Gemini оживляют кадр</span></div>
+    <div class="fr"><i>04</i><b>Голос</b><span>HeyGen, ElevenLabs: русская речь</span></div>
+  </div></div>
+  <div class="callout key" style="margin-top:20px">
+    <b class="t">Главное правило</b>
+    <p>Цены, лимиты и названия моделей меняются каждые 1–2 месяца. Например, 22.10.2026 Google закрыл Veo 3.1 Preview, и видео в Gemini теперь делает Gemini Omni. Перед любой оплатой открой официальную страницу тарифов (ссылки в <a href="#cheat">шпаргалках</a>) и сверь цифры с этим гайдом.</p>
+  </div>
+</header>
+
+<section class="sec" id="start" data-s>
+  <div class="kicker">Старт</div>
+  <h2>Как пользоваться гайдом</h2>
+  <p class="sub">Читать подряд не нужно. Пройди разделы 1–3 один раз, дальше открывай нужное по ситуации.</p>
+
+  <h3>Нашлась заминка? Иди сюда</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ситуация</th><th>Раздел</th></tr></thead>
+    <tbody>
+      <tr><td>Не понимаю, с чего начать</td><td><a href="#plan">План на 14 дней</a> и <a href="#map">Карта</a></td></tr>
+      <tr><td>Нейросеть выдаёт не то, что просила</td><td><a href="#prompting">Основы промтинга</a>, потом <a href="#role">Промт-роль</a></td></tr>
+      <tr><td>ChatGPT написал промт, а сервис его не принял или сделал криво</td><td><a href="#role">Промт-роль</a>, блок «Параметры сервиса»</td></tr>
+      <tr><td>Нужна картинка аватара, как живая</td><td><a href="#sources">Исходники в ChatGPT</a></td></tr>
+      <tr><td>Какой сервис взять под мою задачу</td><td><a href="#services">Сравнение сервисов</a></td></tr>
+      <tr><td>Как заплатить за сервис из России</td><td><a href="#pay">Оплата и покупки</a></td></tr>
+      <tr><td>Лицо меняется, кожа пластиковая, видео дёргается, нет синхрона губ</td><td><a href="#trouble">Если что-то пошло не так</a></td></tr>
+      <tr><td>Деньги списались, а подписка не включилась</td><td><a href="#trouble">Если что-то пошло не так</a>, блок про оплату</td></tr>
+      <tr><td>Можно ли так делать, что с авторскими правами и чужими лицами</td><td><a href="#limits">Ограничения и риски</a></td></tr>
+      <tr><td>Незнакомое слово</td><td><a href="#cheat">Словарь</a></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <b class="t">Что нужно для работы</b>
+    <ul>
+      <li>ChatGPT в веб-версии (минимальный платный тариф) для исходников и для написания промтов.</li>
+      <li>Один-два сервиса для видео из раздела 4. Покупать все сразу не нужно: начни с бесплатных тарифов.</li>
+      <li>Способ оплаты зарубежных сервисов: ggsel или бот @for_pur_bot (раздел 5).</li>
+      <li>Заметки или таблица, где лежат паспорт персонажа, удачные промты и расходы.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="map" data-s>
+  <div class="kicker">Карта</div>
+  <h2>Что чем делаем</h2>
+  <p class="sub">Аватар собирается из трёх слоёв. Каждый слой делает свой инструмент, и смешивать их не надо.</p>
+  <div class="flow">
+    <div class="st"><i>Слой 1</i><b>Текст и промты</b>ChatGPT с промт-ролью. Пишет промты под каждый сервис.</div>
+    <div class="st"><i>Слой 2</i><b>Исходник</b>ChatGPT-картинка: лицо, фигура, одежда, свет. Реализм закладывается здесь.</div>
+    <div class="st"><i>Слой 3</i><b>Движение</b>Krea, Grok, Gemini: сцена и камера. HeyGen: говорящий аватар. Syntx: всё в одном окне.</div>
+    <div class="st"><i>Слой 4</i><b>Сборка</b>Склейка, субтитры, звук в монтажной программе.</div>
+  </div>
+  <div class="callout">
+    <b class="t">Почему так</b>
+    <p>Видеомодель оживляет то, что ей дали. Плохая картинка на входе даст плохое видео, как ни крути промт. Поэтому 70% качества делается на слое 2, а видеосервисы только двигают готовый кадр.</p>
+  </div>
+</section>
+
+<!-- ===================== 1. PROMPTING ===================== -->
+<section class="sec" id="prompting" data-s>
+  <div class="kicker">Раздел 1</div>
+  <h2>Основы промтинга</h2>
+  <p class="sub">Промт это задание для нейросети. Она не угадывает, а дорисовывает пустоты усреднённо. Чем меньше пустот, тем ближе результат к тому, что ты видишь в голове.</p>
+
+  <h3>Видео для старта</h3>
+  <p>Посмотри по порядку. Каждое смотри в скорости 1,25 и сразу пробуй в ChatGPT. Если ролик устарел или не зашёл, бери следующий: темы везде одни.</p>
+  <div class="grid">
+    <a class="card" href="https://www.youtube.com/watch?v=38AKndMnwYE" target="_blank" rel="noopener"><b>16 методов промпт-инжиниринга с нуля до PRO</b><span>По-русски. Базовые приёмы и продвинутые. Начни с него.</span></a>
+    <a class="card" href="https://www.youtube.com/watch?v=hnxUIltPJSQ" target="_blank" rel="noopener"><b>Что такое Prompt Engineering за 6 минут</b><span>По-русски. Короткое введение, чтобы понять идею.</span></a>
+    <a class="card" href="https://www.youtube.com/watch?v=Z0eVtllGZ2o" target="_blank" rel="noopener"><b>Как эффективно работать с ChatGPT</b><span>По-русски. Почему формулировка меняет результат.</span></a>
+    <a class="card" href="https://www.youtube.com/watch?v=B-qwrTFRCF4" target="_blank" rel="noopener"><b>Prompt Engineering Made Easy for Beginners</b><span>English. Пошагово, упор на генерацию картинок.</span></a>
+    <a class="card" href="https://www.youtube.com/watch?v=nN-czQqWuE4" target="_blank" rel="noopener"><b>Quick &amp; Practical Introduction to Prompt Engineering</b><span>English. Из чего состоит промт и как его улучшать.</span></a>
+  </div>
+  <p>Официальные руководства, они точнее любых видео и обновляются:</p>
+  <ul>
+    <li><a href="https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide" target="_blank" rel="noopener">OpenAI: как писать промты для картинок</a> <span class="tag off">официально</span></li>
+    <li><a href="https://ai.google.dev/gemini-api/docs/omni" target="_blank" rel="noopener">Google: Gemini Omni, видео и промты</a> <span class="tag off">официально</span></li>
+    <li><a href="https://www.heygen.com/academy/avatars/how-to-use-Avatar-IV" target="_blank" rel="noopener">HeyGen Academy: Avatar IV</a> <span class="tag off">официально</span></li>
+  </ul>
+
+  <h3>Формула промта</h3>
+  <p>Любой промт для картинки или видео собирается из шести кубиков. Не обязательно использовать все, но каждый пропущенный кубик нейросеть заполнит сама, и не всегда так, как тебе надо.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Кубик</th><th>Что писать</th><th>Пример</th></tr></thead>
+    <tbody>
+      <tr><td>1. Кто</td><td>Внешность, возраст, одежда, настроение</td><td>Женщина 27 лет, тёмный гладкий хвост, бежевый свитер</td></tr>
+      <tr><td>2. Что делает</td><td>Одно действие активным глаголом</td><td>Поправляет прядь и смотрит в камеру</td></tr>
+      <tr><td>3. Где</td><td>Место, время суток, детали фона</td><td>Кухня с окном, утро, чашка на столе</td></tr>
+      <tr><td>4. Как снято</td><td>Ракурс, план, камера, движение камеры</td><td>На уровне глаз, средний план, камера чуть приближается</td></tr>
+      <tr><td>5. Свет и стиль</td><td>Источник света, плёнка, цвет, реализм</td><td>Мягкий свет из окна, фото на iPhone, естественная кожа</td></tr>
+      <tr><td>6. Запреты</td><td>Что не менять и чего не должно быть</td><td>Без текста в кадре, лицо не менять, без склеек</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Семь правил, которые решают 90% проблем</h3>
+  <ol>
+    <li><strong>Конкретика вместо красоты.</strong> «Красивая девушка» даёт усреднённое лицо. «Скулы широкие, нос прямой, веснушки на переносице» даёт конкретного человека.</li>
+    <li><strong>Полные предложения.</strong> Современные модели читают их лучше, чем набор слов через запятую.</li>
+    <li><strong>Одно действие за один раз.</strong> В видео на 5–10 секунд помещается одно движение. Три действия превращаются в кашу.</li>
+    <li><strong>Описывай движение, а не то, что уже видно.</strong> В режиме «картинка в видео» героиня уже на кадре. Пиши, что она делает и куда едет камера.</li>
+    <li><strong>Запреты пиши словами в самом промте.</strong> В большинстве сервисов нет отдельной строки negative prompt, у Gemini Omni её нет точно.</li>
+    <li><strong>Меняй одно за итерацию.</strong> Сменила свет и одежду одновременно, и не знаешь, что сработало.</li>
+    <li><strong>Сначала дёшево.</strong> Тестируй на короткой длине, низком разрешении и дешёвой модели. Дорогую модель включай, когда промт уже отлажен.</li>
+  </ol>
+
+  <h3>Цикл работы</h3>
+  <div class="flow">
+    <div class="st"><i>1</i><b>Цель</b>Что за кадр и для чего он нужен.</div>
+    <div class="st"><i>2</i><b>Промт</b>Через ChatGPT с ролью (раздел 2).</div>
+    <div class="st"><i>3</i><b>Тест</b>Дешёвая попытка, 1–2 штуки.</div>
+    <div class="st"><i>4</i><b>Диагноз</b>Что именно не так: лицо, свет, движение?</div>
+    <div class="st"><i>5</i><b>Правка</b>Меняешь одну вещь, возвращаешься к шагу 3.</div>
+  </div>
+  <p>Если после трёх итераций картинка не приближается, дело не в промте. Смени модель, исходник или сервис и загляни в <a href="#trouble">диагностику</a>.</p>
+
+  <h3>Пять ошибок новичка</h3>
+  <ul>
+    <li>Просить в одном промте всё сразу: героиню, сюжет, диалог, музыку и три смены плана.</li>
+    <li>Писать «сделай красиво» вместо описания света и камеры.</li>
+    <li>Генерировать десять вариантов подряд, не разобрав, чем плох первый. Это сжигает кредиты.</li>
+    <li>Переписывать промт целиком после каждой неудачи вместо одной точечной правки.</li>
+    <li>Просить ChatGPT «напиши промт для видео» без роли и без параметров сервиса (см. раздел 2).</li>
+  </ul>
+</section>
+
+<!-- ===================== 2. ROLE ===================== -->
+<section class="sec" id="role" data-s>
+  <div class="kicker">Раздел 2</div>
+  <h2>Промт-роль с анализом</h2>
+  <p class="sub">Самый сильный приём в гайде. Перед каждой работой с нейросетью для написания контента и промтов сначала дай ей роль и порядок анализа. Чем лучше роль, тем качественнее выдача.</p>
+
+  <div class="callout key">
+    <b class="t">Важное разделение</b>
+    <p>Роль нужна ChatGPT, когда он <strong>пишет промты и тексты</strong>. Сами картинки и видео генерируются другой частью системы или другим сервисом, и им роль не даётся: им даётся готовый промт.</p>
+  </div>
+
+  <h3>Зачем роль и анализ</h3>
+  <ul>
+    <li>Без роли ChatGPT отвечает как усреднённый помощник: общие слова, красивые, но пустые промты.</li>
+    <li>С ролью он задаёт уточняющие вопросы, проверяет задачу на пробелы и пишет промт под конкретную модель.</li>
+    <li>Анализ до промта ловит ошибки, которые иначе выяснятся после потраченных кредитов.</li>
+  </ul>
+
+  <h3>Почему ChatGPT портит промты под сервисы</h3>
+  <p>У каждого сервиса свои входные параметры: длина клипа, форматы, язык речи, что задаётся текстом, а что кнопками. ChatGPT этого не знает или помнит устаревшее, поэтому пишет «универсальный» промт, который сервис исполняет криво. Лечение одно: <strong>в роль всегда вставляется блок «Параметры сервиса»</strong> из шаблонов ниже. Он короткий, но именно он делает промт рабочим.</p>
+
+  <h3>Как использовать (три шага)</h3>
+  <ol>
+    <li>Открой <strong>новый чат</strong> в ChatGPT. Роль работает лучше всего в чистом чате.</li>
+    <li>Вставь мастер-роль, подставь в неё паспорт персонажа и блок параметров нужного сервиса.</li>
+    <li>Опиши задачу своими словами. Ответь на уточняющие вопросы. Получи промт, скопируй в сервис.</li>
+  </ol>
+
+  <h3>Мастер-роль для написания промтов</h3>
+  <p>Жёлтым выделено то, что нужно заменить.</p>
+  <div class="promptbox"><div class="cap">Мастер-роль · вставить в начало нового чата</div>
+<pre class="prompt" id="p-master">РОЛЬ
+Ты продюсер AI-контента и промт-инженер. Ты специализируешься на реалистичных AI-аватарах и коротких видео. Ты сам ничего не генерируешь. Твоя работа: писать промты для сервиса <span class="ph">[НАЗВАНИЕ СЕРВИСА И МОДЕЛИ]</span> так, чтобы результат совпал с моей задачей с первой-второй попытки.
+
+ПОРЯДОК РАБОТЫ (всегда, до написания промта)
+1. Анализ задачи. Коротко, в 3-4 строки: что я хочу получить, где это будет использоваться, какой кадр или ролик в итоге нужен.
+2. Пробелы. Если без ответа придётся угадывать (кто в кадре, что делает, где, сколько секунд, какой язык речи), задай мне не больше 5 вопросов и дождись ответа. Если всего хватает, вопросов не задавай.
+3. Проверка по параметрам сервиса. Ниже блок «Параметры сервиса». Сверь с ним задачу: длительность, формат, язык, что пишется в промте, а что выставляется в интерфейсе. Если задача не помещается в параметры, скажи об этом прямо и предложи, как разбить.
+4. Риски. Назови, что модель в такой задаче обычно портит (лицо, руки, текст, склейки кадров, синхрон губ) и чем это закрыть в промте.
+5. Только потом пиши промт.
+
+ПАСПОРТ ПЕРСОНАЖА (вставлять в промт дословно, не менять)
+<span class="ph">[ВСТАВЬ ПАСПОРТ ИЗ ШПАРГАЛКИ]</span>
+
+ПАРАМЕТРЫ СЕРВИСА
+<span class="ph">[ВСТАВЬ БЛОК ДЛЯ ВЫБРАННОГО СЕРВИСА НИЖЕ]</span>
+
+ФОРМАТ ОТВЕТА
+1. Анализ: 2-4 строки.
+2. Готовый промт целиком, в блоке кода, на английском (если параметры сервиса не требуют другого языка).
+3. Что выставить кнопками в интерфейсе: длительность, формат, разрешение и прочее.
+4. Как проверить результат: на что смотреть в первую очередь.
+5. План Б: что поменять в первую очередь, если не получилось.
+
+ПРАВИЛА
+- Не добавляй в промт то, о чём я не просила.
+- Не меняй паспорт персонажа.
+- Давай один сильный промт, а не меню из десяти вариантов.
+- Если не знаешь параметр сервиса, так и напиши: «уточни в интерфейсе». Не выдумывай.
+- Без капса, уговоров и слов вроде «очень важно». Пиши прямо и конкретно.</pre>
+    <button class="copy" type="button" data-copy="p-master">Копировать</button></div>
+
+  <h3>Блоки «Параметры сервиса»</h3>
+  <p>Подставляй в мастер-роль нужный. Они собраны из официальных страниц и документации на 24.10.2026. Если в интерфейсе сервиса что-то изменилось, поправь блок: он должен совпадать с тем, что ты видишь на экране.</p>
+
+  <details><summary>ChatGPT: картинка (исходник)</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · ChatGPT Images</div>
+<pre class="prompt" id="p-par-gpt">Сервис: ChatGPT (веб-версия), генерация и правка изображений.
+- Читает полные предложения, не набор тегов. Порядок в промте: сцена и фон, затем герой, затем детали, затем ограничения.
+- Реализм задаётся словами «photorealistic», «real photograph», «iPhone photo» и описанием света и камеры. Для кожи прямо проси реальную текстуру: поры, мелкие морщинки, лёгкую асимметрию.
+- Текст на картинке писать в кавычках, указать шрифт, цвет, место. Сложные слова произнести по буквам.
+- Правка: «измени только X, всё остальное оставь как есть». Список неизменного повторять в каждой итерации: лицо, цвет кожи, причёска, поза, свет, ракурс.
+- Формат кадра писать словами: вертикальный 9:16, квадрат, горизонтальный 16:9.
+- Если нужен референс лица, он прикладывается к сообщению отдельно. Это моё фото или мой сгенерированный персонаж.
+- Пиши промт на английском, объяснения мне на русском.</pre>
+    <button class="copy" type="button" data-copy="p-par-gpt">Копировать</button></div>
+  </div></details>
+
+  <details><summary>Krea: картинка в видео</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · Krea Video</div>
+<pre class="prompt" id="p-par-krea">Сервис: Krea (krea.ai), режим «изображение в видео». В Krea внутри много видеомоделей (Seedance, Kling, Veo и другие), у каждой свои правила. Модель я выбираю сама, назову её в задаче.
+- Стартовый кадр загружается в интерфейсе, промт описывает ТОЛЬКО движение: что делает героиня и как движется камера. Не описывай то, что уже видно на кадре.
+- Одно действие и одно движение камеры на клип.
+- Длительность, формат кадра и разрешение выставляются в интерфейсе, не в тексте промта. Напомни мне, что выставить.
+- Для тестов советуй самую дешёвую модель и самую короткую длительность.
+- Звук и речь зависят от модели. Если не уверен, что модель умеет речь, напиши «проверь в интерфейсе».
+- Пиши промт на английском.</pre>
+    <button class="copy" type="button" data-copy="p-par-krea">Копировать</button></div>
+  </div></details>
+
+  <details><summary>Grok Imagine: картинка в видео</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · Grok Imagine</div>
+<pre class="prompt" id="p-par-grok">Сервис: Grok Imagine (приложение или сайт Grok), режим «изображение в видео».
+- Длительность выбирается в интерфейсе: 6, 10 или 15 секунд. Разрешение: 480p или 720p, 1080p только на старшем тарифе.
+- Клип идёт со встроенным звуком.
+- Картинка уже определяет героя. Промт описывает движение: действие героини, поведение фона, движение камеры. Абстрактные слова вроде «эпично» не использовать.
+- Начинать с коротких клипов, длинные тратят больше лимита.
+- Одно действие на клип.
+- Пиши промт на английском.</pre>
+    <button class="copy" type="button" data-copy="p-par-grok">Копировать</button></div>
+  </div></details>
+
+  <details><summary>Gemini: видео (Gemini Omni)</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · Gemini Omni</div>
+<pre class="prompt" id="p-par-gem">Сервис: Gemini (приложение), генерация видео моделью Gemini Omni Flash. Нужен платный план Google AI.
+- Клип 3-10 секунд, формат 16:9 по умолчанию или 9:16 вертикально. Если приложен референс, формат берётся с него.
+- К запросу можно приложить до 5 изображений и 1 видео.
+- Модель по умолчанию добавляет склейки. Чтобы их не было, в промте пиши: «In a single continuous shot, no scene cuts».
+- Негативных полей нет. Запреты пиши прямо в тексте: «No dialogue», «No text on screen».
+- Звук генерируется по умолчанию. Описывай нужный звук в промте.
+- Время внутри клипа задаётся словами («после 3 секунд…») или таймкодами [0-3s].
+- Текст на экране: пиши точную надпись в кавычках.
+- Реплики героини: пиши так: <кто говорит> says: "<точный текст>". Официально полностью поддержан английский, остальные языки «могут работать, результат может отличаться». Русскую речь я проверю тестом, ты её не обещай.
+- Реплика: короткая, один говорящий, других действий в клипе минимум (иначе героиня может промолчать). Возможны ошибки в ударениях и смена языка, это нормально для русского.
+- Правка готового видео: коротко и в конце «Keep everything else the same».
+- Картинка в видео: описывай движение камеры, движение героини и окружение. Фразы вроде «make it move» дают слабый результат.
+- Пиши промт на английском, русскую реплику оставь по-русски в кавычках.</pre>
+    <button class="copy" type="button" data-copy="p-par-gem">Копировать</button></div>
+  </div></details>
+
+  <details><summary>HeyGen: говорящий аватар из фото (Avatar IV)</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · HeyGen Avatar IV</div>
+<pre class="prompt" id="p-par-hey">Сервис: HeyGen, видео с говорящим аватаром, созданным из одного фото (Avatar IV).
+Что нужно написать для меня:
+1. Скрипт речи на русском. Короткие предложения, 8-14 слов. Знаки препинания ставь там, где нужна пауза. Числа пиши словами. Иностранные слова и бренды проверь на произносимость, при сомнении дай написание, как слышится.
+2. Motion prompt: описание жестов и мимики по-английски, одной-двумя фразами (например: легкие кивки, мягкая улыбка в начале, руки не в кадре).
+3. Рекомендацию по настройкам в интерфейсе: выразительность Low, Normal или High; режим Faster или Quality (Quality стоит вдвое больше кредитов, для теста бери Faster).
+Исходное фото: анфас, лицо чёткое, ровный свет, без очков и сильных теней. Фото я загружаю сама.
+Голос: выбирается в интерфейсе из библиотеки, создаётся из описания или загружается готовым аудиофайлом (например, из ElevenLabs). Если озвучка готовая, скрипт нужен мне только как текст для озвучки. Предложи, какой тембр описать, чтобы он совпал с образом героини.
+Длина видео на бесплатном тарифе до 1 минуты.</pre>
+    <button class="copy" type="button" data-copy="p-par-hey">Копировать</button></div>
+  </div></details>
+
+  <details><summary>ElevenLabs: озвучка текста</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · ElevenLabs</div>
+<pre class="prompt" id="p-par-eleven">Сервис: ElevenLabs, озвучка текста нейросетью. Ты пишешь для меня текст для озвучки, не промт для картинки.
+- Язык: русский. Короткие предложения, 8-14 слов. Точки и запятые там, где нужна пауза.
+- Числа, даты, сокращения пиши словами. Иностранные слова и бренды пиши так, как они должны прозвучать по-русски.
+- Слова, где возможна ошибка в ударении, выпиши отдельным списком в конце, чтобы я проверила их на слух.
+- Разбей текст на абзацы по 2-4 предложения: тестировать и перегенерировать удобнее по кускам.
+- Укажи, какой тембр, возраст и темп подойдут героине. Голос я выберу в библиотеке или сделаю свой клон.
+- Не копируй голоса реальных людей и знаменитостей.
+- Пиши текст для озвучки на русском, объяснения мне на русском.</pre>
+    <button class="copy" type="button" data-copy="p-par-eleven">Копировать</button></div>
+  </div></details>
+
+  <details><summary>Syntx: любая модель из списка</summary><div class="in">
+    <div class="promptbox"><div class="cap">Параметры сервиса · Syntx</div>
+<pre class="prompt" id="p-par-syn">Сервис: Syntx (веб-версия или Telegram-бот), набор разных моделей в одном окне. Модель я выбираю в интерфейсе и называю в задаче.
+- Каждая модель внутри Syntx принимает параметры своего разработчика (длительность, формат, референсы). Правила модели важнее моих догадок: если не уверен, напиши «уточни в настройках модели».
+- Оплата идёт токенами, поэтому для теста выбирай короткую длительность и дешёвую модель.
+- Картинки примерно 1,5-2 токена за попытку, видео от 6 до 20+ токенов за попытку в зависимости от модели.
+- В веб-версии часть функций недоступна, они есть в Telegram-боте.
+- Пиши промт на английском.</pre>
+    <button class="copy" type="button" data-copy="p-par-syn">Копировать</button></div>
+  </div></details>
+
+  <h3>Вторая роль: диагност результата</h3>
+  <p>Когда результат не получился, не переписывай промт наугад. Дай ChatGPT результат и промт, пусть найдёт причину.</p>
+  <div class="promptbox"><div class="cap">Роль-диагност · новый чат</div>
+<pre class="prompt" id="p-diag">Ты промт-инженер и разборщик ошибок генерации. Я пришлю промт, сервис, настройки и результат (картинку или описание видео). Не переписывай промт сразу.
+
+Порядок:
+1. Диагноз. Что именно не так: лицо, кожа, руки, свет, движение, склейки, звук, формат. Это промт, исходник, настройки или ограничение модели?
+2. Одна главная причина и одна второстепенная.
+3. Одна точечная правка промта (покажи, что изменено). Остальное не трогай.
+4. Если причина не в промте, скажи это прямо и предложи другое решение: другая модель, другой исходник, другой сервис.
+5. Что проверить на следующей генерации.
+
+Не придумывай причины, которых не видно в материале. Если данных мало, задай до 3 вопросов.</pre>
+    <button class="copy" type="button" data-copy="p-diag">Копировать</button></div>
+
+  <div class="callout warn">
+    <b class="t">Что роль не лечит</b>
+    <p>Роль улучшает промт, но не заменяет хороший исходник и не снимает ограничения модели. Если лицо плывёт из-за слабой картинки, поможет новая картинка, а не десятая версия промта.</p>
+  </div>
+</section>
+
+<!-- ===================== 3. SOURCES ===================== -->
+<section class="sec" id="sources" data-s>
+  <div class="kicker">Раздел 3</div>
+  <h2>Исходники в ChatGPT</h2>
+  <p class="sub">Исходник это первая картинка аватара: лицо, фигура, одежда. С неё стартуют все видеосервисы. Реализм закладывается здесь, и ChatGPT делает его хорошо.</p>
+
+  <h3>Что нужно знать про ChatGPT для картинок</h3>
+  <ul>
+    <li>Картинки делаются прямо в чате веб-версии. Отдельной кнопки не нужно: пиши «создай изображение…» или приложи фото и опиши правку.</li>
+    <li>Руководство OpenAI по промтам написано для модели gpt-image-2 <span class="tag off">официально</span>. Как именно модель называется внутри твоего тарифа ChatGPT, источники расходятся (gpt-image-2, «Images 2.0», GPT Image 1.5) <span class="tag chk">проверь</span>. Для промтов это не важно, правила реализма одни.</li>
+    <li>Точное число картинок в день на минимальном тарифе OpenAI не публикует. Когда лимит близко, ChatGPT показывает уведомление со временем сброса <span class="tag rev">по обзорам</span>. Не планируй работу «сто кадров за вечер».</li>
+    <li>Каждый новый чат начинается с чистого листа. Паспорт персонажа и референс-фото вставляй заново.</li>
+  </ul>
+
+  <h3>Рецепт реализма</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Делай</th><th>Не делай</th></tr></thead>
+    <tbody>
+      <tr><td>Пиши «photorealistic photograph, shot on iPhone» или «35mm film photograph»</td><td>Не пиши «идеальная кожа», «глянец», «студийный свет»: получится кукла</td></tr>
+      <tr><td>Проси реальную текстуру: поры, мелкие морщинки, лёгкую асимметрию, неидеальные волосы</td><td>Не проси «без недостатков»</td></tr>
+      <tr><td>Описывай свет словами: «мягкий свет из окна слева», «пасмурный день»</td><td>Не перечисляй модные слова вроде «cinematic, masterpiece, 8k»</td></tr>
+      <tr><td>Указывай ракурс и план: «на уровне глаз, средний план, 50 мм»</td><td>Не меняй ракурс в серии без причины: модель переинтерпретирует лицо</td></tr>
+      <tr><td>Задавай бытовые детали: чашка, лёгкая небрежность, складки одежды</td><td>Не делай фон идеально пустым, если нужен вид «живого» кадра</td></tr>
+    </tbody>
+  </table></div>
+  <p>Камера в промте задаёт общий вид и композицию, а не физику объектива. Не жди точной имитации «85 мм f/1.4».</p>
+
+  <h3>Шаг 1. Паспорт персонажа</h3>
+  <p>Паспорт это текст с чертами лица и внешности. Он вставляется в каждый промт дословно, и героиня остаётся одной и той же. Шаблон в разделе <a href="#cheat">шпаргалок</a>.</p>
+
+  <h3>Шаг 2. Первый портрет</h3>
+  <div class="promptbox"><div class="cap">ChatGPT · первый портрет</div>
+<pre class="prompt" id="p-portrait">Photorealistic portrait photograph of <span class="ph">[паспорт персонажа]</span>. Shot like a real iPhone photo, eye level, medium close-up, soft natural window light from the left, neutral light background. Natural skin texture with visible pores, fine lines and slight asymmetry, no airbrushing, no beauty filter. Relaxed neutral expression, looking straight into the camera. Vertical 4:5 frame.</pre>
+    <button class="copy" type="button" data-copy="p-portrait">Копировать</button></div>
+  <p>Сгенерируй 3–4 варианта, выбери лучший. Лицо, которое тебе нравится, закрепляется как главный референс.</p>
+
+  <h3>Шаг 3. Референс-набор</h3>
+  <p>Один кадр аватара не держит героиню в сериях. Нужен набор из четырёх картинок: анфас, три четверти, профиль, в полный рост. Делай каждую по главному референсу.</p>
+  <div class="promptbox"><div class="cap">ChatGPT · с приложенным референсом</div>
+<pre class="prompt" id="p-ref">Use the attached image as the only reference for the face. This is my AI-generated character. Keep exactly the same face shape, eye shape, nose, lips, jawline, hairline, skin tone and hairstyle. Do not beautify, do not replace the face.
+Create a new photorealistic photograph of the same woman <span class="ph">[ракурс: three-quarter view / side profile / full body standing]</span>, same clothes, same soft window light, neutral background, shot like a real iPhone photo, natural skin texture.</pre>
+    <button class="copy" type="button" data-copy="p-ref">Копировать</button></div>
+
+  <h3>Шаг 4. Сцены и правки</h3>
+  <div class="promptbox"><div class="cap">ChatGPT · новая сцена с той же героиней</div>
+<pre class="prompt" id="p-scene">Use the attached image as the only reference for the face and keep the same character exactly (face shape, eyes, nose, lips, jawline, hairline, skin tone, hairstyle). Do not change the face.
+Scene: <span class="ph">[где она, что делает, что на ней, свет, ракурс]</span>.
+Photorealistic photograph, shot on iPhone, natural skin texture, no airbrushing, vertical 9:16 frame. Make no text appear in the image.</pre>
+    <button class="copy" type="button" data-copy="p-scene">Копировать</button></div>
+  <div class="promptbox"><div class="cap">ChatGPT · точечная правка</div>
+<pre class="prompt" id="p-edit">Change only <span class="ph">[одну вещь: например, цвет свитера на тёмно-зелёный]</span>. Keep everything else exactly the same: face, skin tone, hairstyle, pose, lighting, camera angle, background.</pre>
+    <button class="copy" type="button" data-copy="p-edit">Копировать</button></div>
+
+  <h3>Правила серии</h3>
+  <ul>
+    <li>Один ракурс и один «объектив» в словах на всю серию.</li>
+    <li>В кадре один человек. Мелкие лица на фоне ломают распознавание и портят похожесть.</li>
+    <li>Правки по одной, разговором: сначала композиция, потом лицо, потом мелочи (руки, волосы).</li>
+    <li>Если лицо «уехало» после 5–6 правок, начни новый чат: приложи лучшую картинку и паспорт.</li>
+    <li>Лучший референс: анфас, ровный свет, видны глаза и линия волос, без очков и шапок, не меньше 1024 пикселей.</li>
+  </ul>
+
+  <h3>Готово ли фото для видео</h3>
+  <ul class="check" data-save="chk-photo">
+    <li><input type="checkbox" id="cp1"><span>Лицо чёткое, глаза открыты, рот закрыт или чуть приоткрыт.</span></li>
+    <li><input type="checkbox" id="cp2"><span>Руки или не в кадре, или с нормальными пальцами.</span></li>
+    <li><input type="checkbox" id="cp3"><span>На картинке нет случайного текста и логотипов.</span></li>
+    <li><input type="checkbox" id="cp4"><span>Вокруг героини есть место для движения камеры.</span></li>
+    <li><input type="checkbox" id="cp5"><span>Формат подходит: 9:16 для Reels и Shorts, 16:9 для горизонта.</span></li>
+    <li><input type="checkbox" id="cp6"><span>Кожа выглядит живой, без пластикового блеска.</span></li>
+  </ul>
+</section>
+
+<!-- ===================== 4. SERVICES ===================== -->
+<section class="sec" id="services" data-s>
+  <div class="kicker">Раздел 4</div>
+  <h2>Сравнение сервисов</h2>
+  <p class="sub">Шесть сервисов закрывают весь путь от картинки до говорящего аватара, ElevenLabs отвечает за голос. Начни с бесплатных тарифов и докупай то, во что упёрлась.</p>
+
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>Сервис</th><th>Для чего</th><th>Плюсы</th><th>Минусы</th><th>Цена на 24.10.2026</th></tr></thead>
+    <tbody>
+      <tr><td><a href="#krea">Krea</a></td><td>Картинка в видео, выбор из многих видеомоделей, апскейл, обучение стиля</td><td>Много моделей в одном месте. Есть бесплатный план с дневным лимитом. Коммерческая лицензия с платных планов</td><td>Кредиты уходят быстро. Лучшие видеомодели на старших тарифах. Нужно учиться выбирать модель</td><td>Free 100 единиц в день. Basic $9. Pro $35 <span class="tag off">официально</span></td></tr>
+      <tr><td><a href="#grok">Grok Imagine</a></td><td>Быстрое оживление картинки, клипы 6–15 с со звуком</td><td>Просто и быстро. Звук идёт вместе с видео</td><td>Нет бесплатного видео. Лимиты нестабильны и разные в разных источниках. 1080p только на дорогом тарифе</td><td>SuperGrok около $30. Plus около $100 <span class="tag rev">по обзорам</span></td></tr>
+      <tr><td><a href="#gemini">Gemini</a></td><td>Видео с речью и звуком, правка видео, картинки Nano Banana</td><td>Умеет речь и звук в клипе, держит героиню по референсам, удобно в одном аккаунте Google</td><td>Нужен платный план Google AI. Оплата из РФ сложна. Русская речь официально не гарантирована</td><td>Google AI Pro около $19,99 <span class="tag rev">по обзорам</span></td></tr>
+      <tr><td><a href="#heygen">HeyGen</a></td><td>Реальный говорящий аватар из фото, перевод видео на 175+ языков</td><td>Лучший инструмент для речи в кадре. Есть бесплатный тариф. Аватар живой, с жестами</td><td>Дорожает от минут видео. Бесплатно 3 видео и водяной знак. Русскую озвучку надо проверять на слух</td><td>Free $0. Creator $29. Pro $49 <span class="tag off">официально</span></td></tr>
+      <tr><td><a href="#syntx">Syntx</a></td><td>Одно окно со многими моделями: картинки, видео, текст, звук. Быстрый тест идей</td><td>Не надо покупать десять подписок. Telegram-бот и сайт с одним балансом. Есть бесплатный план</td><td>Токены расходуются быстро. В вебе меньше функций, чем в боте. Версии моделей могут отставать от оригинала</td><td>Basic 890 ₽ за 260 токенов (июнь 2026) <span class="tag rev">по обзорам</span></td></tr>
+      <tr><td><a href="#eleven">ElevenLabs</a></td><td>Озвучка текста нейросетью, клонирование своего голоса. Файл потом идёт в HeyGen или в монтаж</td><td>Один из лучших голосов, по обзорам хорошо справляется с русским. Тот же голос во всех роликах. Есть бесплатный план</td><td>Бесплатный план только для некоммерческих задач. Ударения нужно проверять на слух. По обзорам недоступен из РФ и не принимает российские карты</td><td>Free 10 000 кредитов в месяц. Starter $5–6. Creator около $22 <span class="tag rev">по обзорам</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Что брать под задачу</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Задача</th><th>Первый выбор</th><th>Запасной</th></tr></thead>
+    <tbody>
+      <tr><td>Героиня говорит в кадре, рот совпадает со словами</td><td>HeyGen (аватар из фото)</td><td>Gemini, если русская речь пройдёт тест</td></tr>
+      <tr><td>Героиня двигается: идёт, смотрит, улыбается, камера плывёт</td><td>Krea или Grok</td><td>Gemini Omni, Syntx</td></tr>
+      <tr><td>Сцена с речью и звуком сразу в одном клипе</td><td>Gemini Omni</td><td>Grok, Krea (модели со звуком)</td></tr>
+      <tr><td>Протестировать много моделей, не платя за каждую</td><td>Syntx</td><td>Бесплатные тарифы Krea и HeyGen</td></tr>
+      <tr><td>Серия кадров одной героини</td><td>ChatGPT (раздел 3)</td><td>Krea с референсом</td></tr>
+      <tr><td>Улучшить резкость и разрешение готового кадра</td><td>Апскейл в Krea</td><td>Модели Topaz и Magnific в Syntx</td></tr>
+      <tr><td>Чистая русская озвучка, один и тот же голос во всех роликах</td><td>ElevenLabs, файл в HeyGen или в монтаж</td><td>Голоса из библиотеки HeyGen</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <b class="t">Начни с минимума</b>
+    <p>Бесплатные тарифы Krea, HeyGen и Syntx покрывают первые две недели обучения. Платить стоит, когда ты точно знаешь, во что упёрлась: нет дневных единиц, нужен звук, нужен водяной знак меньше. Не покупай «на всякий случай» и не бери годовую подписку до проверки.</p>
+  </div>
+
+  <h3 id="ru-speech">Русская речь: что известно на 24.10.2026</h3>
+  <p>Собрано из статей, обзоров и тестов на Хабре, vc.ru, DTF и страниц самих сервисов. Это не мои собственные тесты. Свой тест на 5 секунд всё равно нужен: он описан ниже.</p>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>Инструмент</th><th>Что пишут</th><th>Что делать</th></tr></thead>
+    <tbody>
+      <tr><td>Gemini Omni Flash</td><td>Тест с чтением Есенина (19–20.05.2026) показал, что русская речь хорошая и не хуже Veo 3.1. Главная ошибка: ударение («образА»). Лицо героини в этом тесте было слабо похоже на референс. Официально полностью поддержан только английский <span class="tag rev">по обзорам</span></td><td>Промт на английском, реплика по-русски в кавычках. Реплика короткая, говорящий один. Если лицо критично, сначала проверь сходство</td></tr>
+      <tr><td>Veo 3 и 3.1 (предшественник)</td><td>Синхрон на русском слабее английского на длинных фразах, короткие реплики звучат чисто. Примерно половина попыток выходит чистой, иногда модель переключается на другой язык. Если в промте много других действий, героиня может не сказать ни слова <span class="tag rev">по обзорам</span></td><td>Сведения относятся к старой модели, Omni может вести себя иначе. Используй как список возможных проблем</td></tr>
+      <tr><td>Seedance 2.0 (Krea, Syntx)</td><td>В том же тесте в 9 из 10 генераций говорит на «славянском эсперанто», зато картинка и сходство лица лучше <span class="tag rev">по обзорам</span></td><td>Бери для видео без речи, голос клади отдельно</td></tr>
+      <tr><td>HeyGen</td><td>Сервис заявляет 300+ русских голосов и синхронизацию губ на 175+ языках. Независимых свежих тестов мало. В статье на Хабре (июнь 2025) стандартный русский синтез назван корявым и роботизированным <span class="tag rev">по обзорам</span></td><td>Для финала загружай готовую озвучку (ElevenLabs или свой голос), а не доверяй встроенному синтезу</td></tr>
+      <tr><td>ElevenLabs</td><td>Eleven v3 поддерживает 70+ языков, включая русский. В обзоре на Хабре его называют лидером по качеству на русском среди синтезаторов. Инструкций по постановке ударений я не нашла <span class="tag rev">по обзорам</span></td><td>Озвучка отсюда. Ударения проверяй на слух</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="promptbox"><div class="cap">Тестовая фраза · одна и та же для всех сервисов</div>
+<pre class="prompt" id="p-ru-test">Привет! Мне позвонили про новый договор. Я купила торт, красивые шарфы и сразу пошла домой.</pre>
+    <button class="copy" type="button" data-copy="p-ru-test">Копировать</button></div>
+  <p>Здесь слова, на которых синтезаторы чаще всего ошибаются в ударениях: «позвонили», «договор», «торт», «шарфы». Сделай один 5-секундный клип с этой фразой в каждом сервисе и послушай. Результат запиши в таблицу «проверено».</p>
+
+  <!-- KREA -->
+  <article class="svc" id="krea">
+    <h3>Krea</h3>
+    <p class="what">Платформа с картинками, видео, апскейлом и обучением своего стиля. Внутри собраны чужие модели (Nano Banana, Seedance, Kling и другие), и ты выбираешь, какой пользоваться.</p>
+    <div class="facts">
+      <div class="fact"><b>Цены</b>Free: 100 единиц в день, обновляются каждый день. Basic: $9 в месяц или около $5 при оплате за год, 5 000 единиц. Pro: $35 или около $21 за год, 20 000 единиц. Max: $105 или около $63 за год <span class="tag off">официально</span></div>
+      <div class="fact"><b>Что даёт тариф</b>Basic: часть видеомоделей, в оценке около 15 видео Seedance 2.0 Fast или около 112 картинок Nano Banana 2. Pro: все видеомодели (Veo, Seedance, Kling), около 65 видео Seedance 2.5 или 450 картинок <span class="tag off">официально</span></div>
+      <div class="fact"><b>Оплата из РФ</b>Нужна зарубежная карта. Российские карты, как правило, не принимаются, нужен посредник (раздел 5) <span class="tag chk">проверь</span></div>
+      <div class="fact"><b>Коммерция</b>Лицензия на коммерческое использование указана для Basic и выше. У Free условие противоречиво в самом тексте страницы <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как пользоваться: картинка в видео</h4>
+    <ol>
+      <li>Зайди на krea.ai и зарегистрируйся. Бесплатный план включается сразу.</li>
+      <li>Открой раздел Video. Загрузи исходник из ChatGPT.</li>
+      <li>Выбери модель. Для теста бери самую дешёвую (например, Seedance Fast). Дорогую включай, когда промт отлажен.</li>
+      <li>Выставь длительность, формат кадра, разрешение. Для теста: минимальная длительность.</li>
+      <li>Вставь промт движения (его написал ChatGPT с блоком параметров Krea).</li>
+      <li>Запусти. Посмотри результат, исправь одну вещь, запусти ещё.</li>
+      <li>Скачай удачный клип и сохрани в папку проекта вместе с промтом.</li>
+    </ol>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>Единицы на Free обновляются каждый день, но видеомоделей на Free мало: страница противоречит сама себе («все модели» на карточке и «Limited» в таблице).</li>
+        <li>Одновременные генерации: Basic 4 картинки и 2 видео, Pro 8 и 4. На Free одна картинка за раз.</li>
+        <li>Единицы не равны штукам. Один клип может стоить от нескольких десятков до нескольких сотен единиц в зависимости от модели. Смотри цену перед запуском.</li>
+        <li>Набор моделей в Krea меняется. Названия из этого гайда могут устареть, ориентируйся на меню сервиса.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>Запустила дорогую модель на первой попытке. Лечение: сначала дешёвая и короткая.</li>
+        <li>В промте движения описана вся сцена. Модель заново рисует то, что уже есть на картинке. Опиши только действие и камеру.</li>
+        <li>Три действия в одном клипе. Оставь одно.</li>
+      </ul>
+    </div></details>
+  </article>
+
+  <!-- GROK -->
+  <article class="svc" id="grok">
+    <h3>Grok Imagine</h3>
+    <p class="what">Генерация картинок и видео внутри Grok от xAI. Самое простое оживление картинки: загрузила кадр, описала движение, получила клип со звуком.</p>
+    <div class="facts">
+      <div class="fact"><b>Цены</b>SuperGrok около $30 в месяц. SuperGrok Plus около $100, добавляет 1080p. Встречается тариф Lite около $10, но он есть только в сторонних источниках <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Параметры клипа</b>Длительность 6, 10 или 15 с. Разрешение 480p или 720p, выбор в окне перед генерацией. Звук встроен <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Бесплатно</b>Источники расходятся: часть пишет, что с марта 2026 бесплатного видео нет, часть оставляет «ограниченный доступ». Считай, что бесплатно видео не получится <span class="tag chk">проверь</span></div>
+      <div class="fact"><b>Оплата из РФ</b>Нужен зарубежный способ оплаты. Российские карты, как правило, не принимаются. Через посредника или Syntx, где Grok Imagine есть в списке моделей <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как пользоваться</h4>
+    <ol>
+      <li>Войди в Grok на сайте или в приложении. Нужна платная подписка.</li>
+      <li>Открой Imagine, выбери режим «изображение в видео» и загрузи исходник.</li>
+      <li>Выбери длительность (для теста 6 секунд) и разрешение (для теста 480p).</li>
+      <li>Опиши движение: что делает героиня, что происходит на фоне, куда едет камера.</li>
+      <li>Запусти, оцени, поправь одну вещь.</li>
+    </ol>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>Точное число видео в день разные источники называют по-разному, от десятков до сотен за период. Официального числа я не нашла. Планируй с запасом и смотри в приложении.</li>
+        <li>Длинные клипы и высокое разрешение расходуют лимит быстрее.</li>
+        <li>Через API есть другие возможности (до 1080p, любая длина до 15 с), но это для разработчиков и отдельный платёж.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>Абстрактный промт вроде «сделай эпично». Нужны конкретные движения.</li>
+        <li>Плохой исходник: мелкое лицо, нет места для движения. Начинай с хорошего кадра.</li>
+        <li>Сразу 15 секунд. Сначала 6.</li>
+      </ul>
+    </div></details>
+  </article>
+
+  <!-- GEMINI -->
+  <article class="svc" id="gemini">
+    <h3>Gemini</h3>
+    <p class="what">Чат-бот Google. Для аватаров нужны две вещи: видеомодель Gemini Omni (видео со звуком и речью, правка видео) и картинки Nano Banana. Видео и картинки доступны на платных планах Google AI.</p>
+    <div class="callout warn">
+      <b class="t">Новое: Veo заменён</b>
+      <p>22.10.2026 Google отключил предварительные версии Veo 3.1. Рекомендованная модель теперь Gemini Omni Flash (gemini-omni-1.1-flash) <span class="tag off">официально</span>. Если в старых статьях ты видишь «Veo 3.1 и три видео в день», это уже история.</p>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>Планы</b>Google AI Plus (400 ГБ), Pro (5 ТБ, 1 000 бонусных кредитов Flow в месяц), Ultra 5x (10 000 кредитов) и Ultra 20x (25 000) <span class="tag off">официально</span></div>
+      <div class="fact"><b>Цена</b>Google AI Pro около $19,99 в месяц. На странице Google при проверке сумма не отобразилась <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Клип</b>3–10 с, 16:9 или 9:16, по умолчанию 720p, в API ещё 1080p и 4K (апскейл), звук включён по умолчанию <span class="tag off">официально</span></div>
+      <div class="fact"><b>Лимиты</b>Фиксированного числа видео в день Google не публикует. Лимиты зависят от плана и обновляются по ходу использования <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Русская речь</b>Google официально гарантирует только английский. В тесте со стихами Есенина (май 2026) русская речь была хорошей, ошибка в ударении. Обзоры советуют промт на английском, а реплику по-русски в кавычках. Подробнее в таблице «Русская речь» в разделе 4 <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Оплата и доступ из РФ</b>Российские карты на оплату Google AI не принимаются. Про доступ к сервису из России источники противоречат друг другу. Покупка готовых подписок через ggsel или бот: есть риск блокировки аккаунта, выбирай проверенных продавцов <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как пользоваться: видео из картинки</h4>
+    <ol>
+      <li>Войди в gemini.google.com в аккаунт Google с активным платным планом. Тебе должно быть 18 лет.</li>
+      <li>Выбери создание видео. Загрузи исходник (до 5 изображений и 1 видео на запрос).</li>
+      <li>Вставь промт: движение камеры, движение героини, окружение. Для кадра без склеек добавь «In a single continuous shot, no scene cuts».</li>
+      <li>Запусти. Генерация идёт несколько минут, в этом чате пока ничего другого делать нельзя.</li>
+      <li>Правка: короткой фразой и «Keep everything else the same».</li>
+    </ol>
+    <h4>Если героиня должна говорить</h4>
+    <p>Пиши промт на английском, а реплику по-русски в кавычках: <code>The woman says: "Привет! Мне позвонили про новый договор."</code> Двоеточие и кавычки важны, без них модель может не произнести слова или напечатать их на экране <span class="tag rev">по обзорам</span>.</p>
+    <ul>
+      <li>Реплика короткая, одно-два предложения, один говорящий на клип.</li>
+      <li>Не нагружай клип другими действиями: у предыдущей модели (Veo) героиня в таком случае могла промолчать <span class="tag rev">по обзорам</span>.</li>
+      <li>Модель может сменить язык посреди реплики или поставить не то ударение. Генерируй 2–3 попытки, выбирай лучшую.</li>
+      <li>Длительность в приложении задаёт сам промт, отдельного поля нет: модель выдаёт 3–10 секунд. Проверяй длину готового файла <span class="tag rev">по обзорам</span>.</li>
+      <li>Если ударения нужны чистыми, делай видео без речи и клади озвучку из ElevenLabs отдельно (раздел 6, цепочка C).</li>
+    </ul>
+    <p>Первый тест: тестовая фраза из таблицы «Русская речь» на 5 секунд.</p>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>На всех выходных видео ставится водяной знак SynthID, он невидим глазу, но распознаётся.</li>
+        <li>Загрузка изображений узнаваемых людей не поддерживается. Своё лицо и сгенерированный персонаж обычно проходят, но случаются ложные отказы: переформулируй как правку «моей фотографии».</li>
+        <li>Изображения несовершеннолетних для правки не поддерживаются в ЕС, Швейцарии и Великобритании.</li>
+        <li>Нельзя изменить голос в уже загруженном видео. Нельзя добавить реплики в загруженное видео, где человек уже говорит. Для сгенерированных клипов речь добавляется.</li>
+        <li>Продление клипа добавляет по 3–10 секунд, всего до 40 секунд.</li>
+        <li>Склейки по умолчанию: без фразы про «single continuous shot» модель может сама перерезать сцену.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>«Make it move»: слабый результат. Конкретика: что движется и куда едет камера.</li>
+        <li>Просишь два диалога и три сцены в 10 секундах.</li>
+        <li>Не написала запреты («No dialogue», «No text on screen»), и появились лишние надписи и звук.</li>
+      </ul>
+    </div></details>
+    <p><a href="https://ai.google.dev/gemini-api/docs/omni" target="_blank" rel="noopener">Документация Gemini Omni</a> · <a href="https://support.google.com/gemini/answer/16126339" target="_blank" rel="noopener">Справка Gemini по видео</a> · <a href="https://one.google.com/about/google-ai-plans/" target="_blank" rel="noopener">Планы Google AI</a></p>
+  </article>
+
+  <!-- HEYGEN -->
+  <article class="svc" id="heygen">
+    <h3>HeyGen</h3>
+    <p class="what">Сервис говорящих аватаров. Загружаешь одно фото, пишешь речь, выбираешь голос, получаешь видео, где героиня говорит с мимикой и жестами. Ещё переводит видео на другие языки.</p>
+    <div class="facts">
+      <div class="fact"><b>Free</b>$0. 3 видео в месяц, до 1 минуты, водяной знак, 500+ стандартных аватаров, 1 собственный аватар <span class="tag off">официально</span></div>
+      <div class="fact"><b>Creator</b>$29 в месяц (около $24 при оплате за год). 600 кредитов, до 1080p, до 30 минут, без водяного знака, перевод на 175+ языков <span class="tag off">официально</span></div>
+      <div class="fact"><b>Pro</b>$49. 1 000 кредитов в базе, до 4K, скрипт можно редактировать при переводе <span class="tag off">официально</span></div>
+      <div class="fact"><b>Расход кредитов</b>Avatar IV около 20 кредитов на минуту видео, Avatar III около 3. Режим Quality вдвое дороже Faster <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Оплата из РФ</b>Нужна зарубежная карта. Российские карты, как правило, не принимаются. Через посредника (раздел 5) или готовый аккаунт у продавца на ggsel <span class="tag chk">проверь</span></div>
+      <div class="fact"><b>Русский язык</b>HeyGen заявляет 300+ русских голосов и синхронизацию губ на 175+ языках. Независимых тестов мало, а в статье на Хабре (июнь 2025) встроенный русский синтез назван корявым и похожим на робота. Для финала надёжнее загрузить готовую озвучку (ElevenLabs или свой голос) <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Как выглядит интерфейс</b>На 24.10.2026 по умолчанию выбран Avatar V. Режимы: «Ведущий» и «Кинематографичный». Раздел «Одна сцена» открывает видео из фото, «По сценам» открывает ИИ Студию. Avatar IV и V я видела с пометкой «Премиум», Avatar III с липсинком без пометки. Смотрела без входа в аккаунт, поэтому что доступно именно на твоём тарифе, смотри у себя <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как пользоваться: аватар из фото</h4>
+    <ol>
+      <li>Зарегистрируйся на heygen.com. Бесплатный план включается сразу.</li>
+      <li>Открой «Создать» и выбери «Одна сцена» (видео из фото). Выбери версию аватара: на 24.10.2026 по умолчанию стоит Avatar V, версии IV и V помечены «Премиум», посмотри, что доступно на твоём тарифе. Загрузи фото: анфас, лицо чёткое, ровный свет, без очков.</li>
+      <li>Вставь скрипт речи (его написал ChatGPT с блоком параметров HeyGen). Короткие предложения, паузы знаками.</li>
+      <li>Выбери голос: из библиотеки, создай по описанию или загрузи свою озвучку.</li>
+      <li>В motion prompt опиши жесты и мимику. Выставь выразительность: Low, Normal или High.</li>
+      <li>Для теста режим Faster. Для финала Quality (вдвое дороже).</li>
+      <li>Сгенерируй, послушай, поправь скрипт или голос, выгрузи.</li>
+    </ol>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>На Free видео не длиннее минуты и с водяным знаком. Чтобы убрать знак, нужен платный тариф.</li>
+        <li>Кредиты на Creator и Pro заканчиваются: нужно ждать нового цикла или повышать тариф. Неиспользованные переходят максимум на один цикл <span class="tag rev">по обзорам</span>.</li>
+        <li>Условия коммерческого использования на странице тарифов не указаны. Для рекламы и продаж прочитай Terms of Service сервиса.</li>
+        <li>Лицо в видео должно быть твоим, с согласием владельца или полностью сгенерированным.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>Фото с сильным поворотом головы или тенью на лице: аватар получается «мёртвым».</li>
+        <li>Длинные предложения в скрипте: дыхание и интонация ломаются.</li>
+        <li>Цифры и английские слова в тексте: произношение «плывёт». Пиши числа словами, иностранное как слышится.</li>
+        <li>Весь финал сразу в Quality: кредиты ушли на черновики.</li>
+      </ul>
+    </div></details>
+    <p><a href="https://www.heygen.com/pricing" target="_blank" rel="noopener">Тарифы HeyGen</a> · <a href="https://www.heygen.com/academy/avatars/how-to-use-Avatar-IV" target="_blank" rel="noopener">Avatar IV в Academy</a></p>
+  </article>
+
+  <!-- SYNTX -->
+  <article class="svc" id="syntx">
+    <h3>Syntx</h3>
+    <p class="what">Агрегатор нейросетей в одном окне: сайт syntx.ai и Telegram-бот @syntxaibot с общим балансом токенов. Внутри картинки, видео, текст, звук.</p>
+    <div class="facts">
+      <div class="fact"><b>Что внутри</b>Картинки и видео: Nano Banana, GPT Image, Seedream, Seedance, Flux, Kling, Google Veo, Runway, Luma, Hailuo, Grok Imagine и другие. Текст: ChatGPT, Claude, Gemini, Grok, DeepSeek. Звук: ElevenLabs, Suno <span class="tag off">официально</span></div>
+      <div class="fact"><b>Тарифы</b>Бесплатный план без срока. Платный на 1, 3, 6 или 12 месяцев, при годовой оплате скидка 15%. Basic в июне 2026 стоил 890 ₽ за месяц, 260 токенов <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Токены</b>Картинка около 1,5–2 токенов за попытку. Видео от 6 до 21 токена и больше. Токены не сгорают, но тратить можно только при активной подписке <span class="tag off">официально</span></div>
+      <div class="fact"><b>Новичку</b>5 бесплатных токенов и 5 запросов к языковым моделям <span class="tag off">официально</span></div>
+      <div class="fact"><b>Оплата</b>Telegram Stars (Basic за 760 звёзд). По одному обзору есть рублёвые карты и СБП, работает без VPN. Цены в рублях на самом сайте при проверке не показаны <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как пользоваться</h4>
+    <ol>
+      <li>Открой @syntxaibot в Telegram или syntx.ai и войди. Новым даётся 5 токенов.</li>
+      <li>Выбери модель. Название модели на странице и в боте могут отличаться.</li>
+      <li>До запуска посмотри цену попытки в токенах.</li>
+      <li>Для теста бери короткую длительность и дешёвую модель.</li>
+      <li>Вставь промт (ChatGPT написал его с блоком параметров Syntx), запусти, оцени.</li>
+      <li>Если часть функций недоступна на сайте, открой то же самое в боте.</li>
+    </ol>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>Пополнение токенов (Профиль) требует активной подписки.</li>
+        <li>На сайте две формулировки про языковые модели противоречат: где-то они бесплатны, где-то списывают токены. Смотри в самом интерфейсе.</li>
+        <li>Расчёт по обзору: Basic в 260 токенов это примерно 130–170 картинок или 12–40 видео, в зависимости от модели.</li>
+        <li>Версия модели в агрегаторе может отличаться от оригинала по настройкам и скорости обновления.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>Сразу дорогая видеомодель: 20 токенов уходят на одну неудачную попытку.</li>
+        <li>Оплатила год, не проверив, что нужные модели есть и работают. Сначала месяц.</li>
+        <li>Токены на балансе не тратятся: подписка закончилась. Продли.</li>
+      </ul>
+    </div></details>
+    <p><a href="https://syntx.ai" target="_blank" rel="noopener">syntx.ai</a></p>
+  </article>
+
+  <!-- ELEVENLABS -->
+  <article class="svc" id="eleven">
+    <h3>ElevenLabs</h3>
+    <p class="what">Нейросеть для озвучки текста и клонирования голоса. Для аватаров нужна как «голос за кадром»: ты озвучиваешь скрипт здесь и дальше подкладываешь аудио в HeyGen или монтаж. Так голос получается чище, чем у встроенного синтеза, и остаётся один и тот же во всех роликах.</p>
+    <div class="facts">
+      <div class="fact"><b>Цены</b>Free: 10 000 кредитов в месяц, только некоммерческое использование. Starter около $5–6: есть коммерческая лицензия и быстрое клонирование голоса. Creator около $22: профессиональное клонирование. Источники расходятся по цифрам <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Расход</b>Около 1 000 кредитов на минуту звука на модели Multilingual v2. На быстрых моделях дешевле <span class="tag rev">по обзорам</span></div>
+      <div class="fact"><b>Русский язык</b>Eleven v3: 70+ языков, русский среди них. Ударения проверяй на слух: инструкций по ним я не нашла <span class="tag chk">проверь</span></div>
+      <div class="fact"><b>Доступ и оплата из РФ</b>По обзорам сервис недоступен из России и не принимает российские карты. Путь: ElevenLabs как модель внутри Syntx (есть в списке на сайте Syntx) или посредник из раздела 5 <span class="tag chk">проверь</span></div>
+    </div>
+    <h4>Как использовать с HeyGen</h4>
+    <ol>
+      <li>Напиши скрипт речи через ChatGPT с блоком параметров для озвучки (раздел 2). Короткие предложения, числа словами.</li>
+      <li>В ElevenLabs открой Text to Speech, выбери русский голос из библиотеки или свой клон. Модель бери новейшую (Eleven v3), в обзорах она лучше на русском.</li>
+      <li>Вставь скрипт, сгенерируй, послушай. Если слово прозвучало с неверным ударением, перепиши его так, как слышится, и сгенерируй заново.</li>
+      <li>Скачай аудиофайл (mp3).</li>
+      <li>В HeyGen в поле сценария нажми «загрузить/записать» и загрузи файл. Аватар заговорит этим голосом.</li>
+    </ol>
+    <details><summary>Лимиты и ограничения</summary><div class="in">
+      <ul>
+        <li>Бесплатный план запрещает коммерческое использование. Для рекламы и продаж нужен платный.</li>
+        <li>Клонировать можно только свой голос или голос человека, который дал согласие. Голоса знаменитостей и чужих людей копировать нельзя.</li>
+        <li>Кредиты тратятся на каждую генерацию, в том числе неудачную. Тестируй на коротком куске.</li>
+        <li>Цены у разных источников отличаются. Проверь на странице тарифов в день оплаты.</li>
+      </ul>
+    </div></details>
+    <details><summary>Типовые ошибки</summary><div class="in">
+      <ul>
+        <li>Загрузила в озвучку весь длинный текст сразу и сожгла кредиты на ошибке в первом слове. Тестируй по абзацу.</li>
+        <li>Не прослушала целиком: ударения и интонация ломаются в середине.</li>
+        <li>Взяла голос «как у известного человека». Это нарушает права и условия сервиса.</li>
+      </ul>
+    </div></details>
+    <p><a href="https://elevenlabs.io/pricing" target="_blank" rel="noopener">Тарифы ElevenLabs</a></p>
+  </article>
+</section>
+
+<!-- ===================== 5. PAY ===================== -->
+<section class="sec" id="pay" data-s>
+  <div class="kicker">Раздел 5</div>
+  <h2>Оплата и покупки</h2>
+  <p class="sub">Зарубежные сервисы, как правило, не принимают российские карты. Ниже два рабочих пути, которыми пользуется автор гайда, и порядок действий, чтобы не потерять деньги.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h4>ggsel.net</h4>
+      <p>Маркетплейс цифровых товаров. Подходит, когда надо что-то относительно простое или дешёвое: подписки, аккаунты, коды пополнения, готовые тарифы.</p>
+      <p><strong>Как выбрать продавца:</strong> смотри рейтинг магазина и количество продаж. Читай свежие отзывы. Не бери самое дешёвое предложение без отзывов.</p>
+    </div>
+    <div class="card">
+      <h4>Бот @for_pur_bot</h4>
+      <p>Telegram-бот PayGPT (раньше «Foreign Purchases») для оплаты зарубежных сервисов и покупок зарубежной картой. Автор гайда пользуется им около двух лет.</p>
+      <p><strong>Условия</strong> (какие сервисы поддерживаются, комиссия, шаги оплаты) смотри внутри бота. Вопросы идут в канал обратной связи @for_pur_feedback. На открытой странице бота эти условия не опубликованы <span class="tag chk">проверь</span></p>
+    </div>
+  </div>
+
+  <h3>Что выбрать</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Ситуация</th><th>Путь</th></tr></thead>
+    <tbody>
+      <tr><td>Нужна обычная подписка сервиса на себя (HeyGen, Krea, Grok)</td><td>Сначала бот @for_pur_bot: спроси в нём, поддерживается ли сервис и какая итоговая сумма. Если нет, ggsel</td></tr>
+      <tr><td>Нужна подписка дешевле или проще, чем у бота</td><td>ggsel, продавец с высоким рейтингом и многими продажами</td></tr>
+      <tr><td>Нужен просто один доступ ко многим моделям</td><td>Syntx (оплата Stars, возможна рублёвая карта)</td></tr>
+      <tr><td>Нужен аккаунт Google AI для Gemini</td><td>Через ggsel у проверенного продавца или через бот. Есть риск потери доступа, прочти раздел «Риски» ниже</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Порядок покупки без потерь</h3>
+  <ol>
+    <li>Определи сервис и тариф, который нужен. Открой официальную страницу цен и запиши цену в долларах.</li>
+    <li>Спроси итоговую сумму у посредника (бот или продавец) и сравни с официальной ценой. Разница это комиссия, она не должна удивлять.</li>
+    <li>Первую оплату делай <strong>на месяц</strong>, не на год.</li>
+    <li>Платить только внутри площадки или бота. Продавец просит оплату «мимо чата» или на карту: отказывайся.</li>
+    <li>После получения доступа проверь: заходишь ли ты в аккаунт, активен ли тариф, видны ли лимиты и нужные модели. Только после этого подтверждай получение на площадке.</li>
+    <li>Скриншоты оплаты, переписки и чека сохраняй до конца срока подписки.</li>
+    <li>Расходы записывай в таблицу. Через месяц сравни: сколько потратила, что получила.</li>
+  </ol>
+
+  <div class="callout warn">
+    <b class="t">Риски, которые надо знать</b>
+    <ul>
+      <li>Доступ, купленный через посредника, может отключиться. Для рабочих проектов держи копии: исходники и готовые клипы лежат у тебя, а не в сервисе.</li>
+      <li>Общие и семейные аккаунты нарушают условия сервисов. Сервис может заблокировать аккаунт, деньги не вернутся.</li>
+      <li>Не вводи свои пароли и данные основной карты в сторонние боты и на сайты по просьбе продавца.</li>
+      <li>Не покупай «взломанные» подписки и ключи. Это риск денег и безопасности.</li>
+    </ul>
+  </div>
+
+  <h3>Как проверить цену самой</h3>
+  <p>Перед оплатой открой официальную страницу и сравни три вещи: цену, лимит (кредиты, единицы, минуты) и список моделей. Список ссылок в <a href="#cheat">шпаргалках</a>. Если цена на странице отличается от гайда, верь странице.</p>
+</section>
+
+<!-- ===================== 6. PIPELINES ===================== -->
+<section class="sec" id="pipelines" data-s>
+  <div class="kicker">Раздел 6</div>
+  <h2>Рабочие цепочки</h2>
+  <p class="sub">Четыре готовых маршрута от идеи до ролика. Следуй шагам, не перескакивай.</p>
+
+  <h3>A. Говорящий аватар из фото</h3>
+  <div class="flow">
+    <div class="st"><i>1</i><b>ChatGPT</b>Роль + паспорт: скрипт речи на русском.</div>
+    <div class="st"><i>2</i><b>ChatGPT</b>Портрет анфас, ровный свет.</div>
+    <div class="st"><i>3</i><b>HeyGen</b>Avatar IV: фото, скрипт, голос, motion prompt.</div>
+    <div class="st"><i>4</i><b>Проверка</b>Слушаешь на слух, правишь скрипт.</div>
+  </div>
+  <p>Когда подходит: объяснялки, отзывы, обращения, реклама. Что брать на первый тест: Free HeyGen, 20–30 секунд.</p>
+
+  <h3>B. Живая сцена: героиня что-то делает</h3>
+  <div class="flow">
+    <div class="st"><i>1</i><b>ChatGPT</b>Сцена: героиня в кадре, 9:16, место для камеры.</div>
+    <div class="st"><i>2</i><b>ChatGPT</b>Роль + параметры Krea или Grok: промт движения.</div>
+    <div class="st"><i>3</i><b>Krea / Grok</b>Короткий тест, дешёвая модель.</div>
+    <div class="st"><i>4</i><b>Правка</b>Одна правка за раз, потом финал в лучшем качестве.</div>
+  </div>
+  <p>Когда подходит: сторис, Reels, рекламные вставки. Правило: один клип равно одно действие.</p>
+
+  <h3>C. Русская речь в движении</h3>
+  <p>Задача: героиня идёт, двигается и говорит по-русски. Единого надёжного решения нет, поэтому два маршрута.</p>
+  <div class="grid">
+    <div class="card"><h4>Маршрут 1: Gemini Omni</h4>
+      <ol><li>Исходник из ChatGPT.</li><li>Промт с репликой: <code>Героиня says: "текст"</code>, «single continuous shot».</li><li>Тест на 5 секундах и одной короткой реплике.</li><li>Если речь звучит по-русски нормально, развивай. Если нет, маршрут 2.</li></ol></div>
+    <div class="card"><h4>Маршрут 2: видео и голос отдельно</h4>
+      <ol><li>Видео без речи в Krea или Grok (в промте «No dialogue»).</li><li>Голос отдельно: озвучка в ElevenLabs (напрямую или через Syntx), при желании файл в HeyGen для говорящего аватара.</li><li>Склейка и синхронизация в монтажной программе.</li><li>Для крупного плана говорящей героини проще HeyGen целиком.</li></ol></div>
+  </div>
+
+  <h3>D. Быстрый тест идеи в одном окне</h3>
+  <div class="flow">
+    <div class="st"><i>1</i><b>ChatGPT</b>Исходник.</div>
+    <div class="st"><i>2</i><b>Syntx</b>Три разные видеомодели на одном и том же кадре и промте.</div>
+    <div class="st"><i>3</i><b>Выбор</b>Какая лучше, ту и используешь дальше в своём сервисе.</div>
+  </div>
+  <p>Когда подходит: идея новая, непонятно, какая модель справится. Обойдётся в десятки токенов, а не в три подписки.</p>
+</section>
+
+<!-- ===================== 7. TROUBLE ===================== -->
+<section class="sec" id="trouble" data-s>
+  <div class="kicker">Раздел 7</div>
+  <h2>Если что-то пошло не так</h2>
+  <p class="sub">Симптом, причина, что делать. Открывай нужное. Если симптома нет в списке, используй роль-диагност из раздела 2.</p>
+
+  <h3>Картинки (ChatGPT)</h3>
+  <details><summary><span class="sym">Лицо стало «другим человеком»</span></summary><div class="in">
+    <p><strong>Причина:</strong> дрейф лица после нескольких правок или слабый референс.</p>
+    <ol><li>Новый чат. Приложи лучший кадр и вставь паспорт.</li><li>Начни промт с «Use the attached image as the only reference for the face» и перечисли черты.</li><li>Один ракурс на всю серию. Правь по одному элементу.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Кожа пластиковая, как у куклы</span></summary><div class="in">
+    <p><strong>Причина:</strong> слова про «идеальность» и «студийный» в промте, или не запрошена текстура.</p>
+    <ol><li>Убери «perfect skin, glossy, studio».</li><li>Добавь «natural skin texture with visible pores, fine lines and slight asymmetry, no airbrushing, shot on iPhone».</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Кривые руки и пальцы</span></summary><div class="in">
+    <p><strong>Причина:</strong> руки одно из слабых мест всех моделей.</p>
+    <ol><li>Спрячь руки: в карманах, за предметом, не в кадре.</li><li>Попроси точечную правку: «Change only the hands, make them natural, five fingers each. Keep everything else the same.»</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Текст на картинке с ошибками</span></summary><div class="in">
+    <ol><li>Пиши надпись в кавычках и укажи «EXACT, verbatim, no extra characters».</li><li>Сложные слова произнеси по буквам.</li><li>Ещё лучше: сделай картинку без текста, надпись добавь в редакторе.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">ChatGPT отказывается: «не могу создавать изображения людей» или «публичная личность»</span></summary><div class="in">
+    <p><strong>Причина:</strong> ложное срабатывание защиты.</p>
+    <ol><li>Новый чат, фото заново, полный промт одним сообщением.</li><li>Пиши от первого лица: «this is my photo / my AI-generated character».</li><li>Никаких имён знаменитостей и «как у кого-то».</li><li>Одно лицо в кадре, одно изменение за раз.</li></ol>
+    <p>Если стабильно режет, смени формулировку или ракурс. Чужое реальное лицо без согласия не использовать (раздел 8).</p>
+  </div></details>
+  <details><summary><span class="sym">Вместо правки получилась новая похожая картинка</span></summary><div class="in">
+    <ol><li>Новый чат, приложи картинку заново.</li><li>Одной фразой: «Change only X. Keep everything else exactly the same: ...».</li></ol>
+  </div></details>
+
+  <h3>Видео (Krea, Grok, Gemini)</h3>
+  <details><summary><span class="sym">Лицо в видео плывёт и меняется</span></summary><div class="in">
+    <p><strong>Причина:</strong> слабый исходник или слишком большое движение.</p>
+    <ol><li>Используй исходник анфас или три четверти, лицо крупное и резкое.</li><li>Уменьши движение: медленнее, меньше амплитуды, короче клип.</li><li>Попробуй другую модель: у каждой своя сила в удержании лица.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">В клипе появились склейки, смена сцены</span></summary><div class="in">
+    <ol><li>В Gemini Omni добавь «In a single continuous shot, no scene cuts».</li><li>Одно действие на клип. Если нужен сюжет, делай несколько клипов и клей сама.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Картинка почти не двигается или дёргается</span></summary><div class="in">
+    <ol><li>Опиши конкретные движения: «she turns her head slowly to the right, camera slowly moves forward».</li><li>Не используй «make it move» и абстракции.</li><li>Дёрганье: короче клип, проще движение, другая модель.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Появился лишний текст, надписи, звуки</span></summary><div class="in">
+    <ol><li>В промт добавь «No text on screen, no subtitles, no dialogue».</li><li>Негативных полей в Gemini Omni нет, запреты только словами.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Персонаж меняется от клипа к клипу</span></summary><div class="in">
+    <ol><li>Каждый клип делай от одного и того же исходника или референс-набора.</li><li>Паспорт в каждом промте дословно.</li><li>В Gemini Omni приложи несколько референсов одной героини.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Героиня говорит не по-русски или с акцентом</span></summary><div class="in">
+    <p><strong>Причина:</strong> в Gemini Omni полностью поддержан английский, другие языки результат нестабильный.</p>
+    <ol><li>Короче реплика, одно предложение, без цифр и иностранных слов.</li><li>Если не помогает, цепочка C, маршрут 2, или целиком в HeyGen.</li></ol>
+  </div></details>
+
+  <h3>Говорящий аватар (HeyGen)</h3>
+  <details><summary><span class="sym">Рот не попадает в слова, взгляд мёртвый</span></summary><div class="in">
+    <ol><li>Новое фото: анфас, свет ровный, лицо крупное, без очков.</li><li>Выразительность Normal или High.</li><li>Добавь motion prompt: лёгкие кивки, мягкая улыбка.</li><li>Короткие предложения.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Голос звучит неестественно или не так ставит ударения</span></summary><div class="in">
+    <ol><li>Выбери другой голос из библиотеки, послушай образец.</li><li>Перепиши скрипт: числа словами, иностранное как слышится.</li><li>Ударение: рядом можно временно использовать знак ударения или переписать слово.</li><li>Самый надёжный путь: озвучь скрипт в ElevenLabs или запиши свой голос, загрузи файл в HeyGen («загрузить/записать» в поле сценария).</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Кредиты закончились раньше срока</span></summary><div class="in">
+    <ol><li>Режим Quality стоит вдвое дороже Faster. Тесты делай в Faster.</li><li>Правь скрипт текстом до генерации, не после.</li><li>Если кредитов хватило на меньше минут, чем ожидала, пересчитай по таблице расхода и выбери тариф под реальный объём.</li></ol>
+  </div></details>
+
+  <h3>Оплата и аккаунты</h3>
+  <details><summary><span class="sym">Деньги списались, а подписка не включилась</span></summary><div class="in">
+    <ol>
+      <li>Проверь профиль сервиса: иногда тариф включается с задержкой. Подожди 10–15 минут.</li>
+      <li>Если покупка через ggsel: открой чат с продавцом, опиши проблему, приложи скриншоты. Не подтверждай получение товара.</li>
+      <li>Если через бот: напиши в канал обратной связи бота со скриншотами и временем оплаты.</li>
+      <li>Если не решилось за сутки, открой спор на площадке.</li>
+    </ol>
+  </div></details>
+  <details><summary><span class="sym">Сервис не принимает оплату или карту</span></summary><div class="in">
+    <ol><li>Российские карты зарубежными сервисами, как правило, не принимаются. Используй путь из раздела 5.</li><li>Повторные попытки не помогают, а карта может уйти под блокировку. Не вводи карту много раз.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Аккаунт заблокировали или доступ пропал</span></summary><div class="in">
+    <ol><li>Сначала проверь, что не истёк срок и не закончились кредиты.</li><li>Напиши продавцу или в поддержку сервиса.</li><li>Сделай привычкой: сохранять результаты у себя, не оставлять их только в сервисе.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">Сервис не открывается или грузит бесконечно</span></summary><div class="in">
+    <ol><li>Обнови страницу, открой в другом браузере или режиме инкогнито.</li><li>Проверь, открывается ли сайт у других. Иногда это сбой сервиса.</li><li>Если сайт заблокирован у провайдера, это решается с твоей стороны сетью, а не промтом.</li></ol>
+  </div></details>
+
+  <h3>Промты</h3>
+  <details><summary><span class="sym">ChatGPT написал промт, а сервис сделал не то</span></summary><div class="in">
+    <ol><li>Скорее всего ChatGPT не знал параметры сервиса. Возьми блок «Параметры сервиса» из раздела 2 и вставь в роль.</li><li>Если блок уже был, используй роль-диагност: дай ей промт и результат.</li></ol>
+  </div></details>
+  <details><summary><span class="sym">ChatGPT «забыл» роль и отвечает общими словами</span></summary><div class="in">
+    <ol><li>Чат стал слишком длинным. Начни новый, вставь роль и краткую выжимку.</li><li>Правила роли держи вверху.</li></ol>
+  </div></details>
+</section>
+
+<!-- ===================== 8. LIMITS ===================== -->
+<section class="sec" id="limits" data-s>
+  <div class="kicker">Раздел 8</div>
+  <h2>Ограничения и риски</h2>
+  <p class="sub">То, что нельзя, и то, что можно, но с условиями.</p>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>Тема</th><th>Правило</th></tr></thead>
+    <tbody>
+      <tr><td>Чьё лицо</td><td>Своё, с письменного согласия человека или полностью сгенерированное. Знаменитостей, чужие фото и фото моделей с чужих сайтов не использовать.</td></tr>
+      <tr><td>Дети</td><td>Фото несовершеннолетних не загружать. Сервисы их отдельно ограничивают, а в ряде регионов запрещают правку.</td></tr>
+      <tr><td>Метка «сделано ИИ»</td><td>Не скрывай, что аватар сгенерирован. Многие платформы требуют или предлагают отметку. В Gemini в видео вшит невидимый водяной знак SynthID. Прочитай правила платформы, где публикуешь.</td></tr>
+      <tr><td>Коммерческое использование</td><td>Krea: лицензия есть на Basic и выше. HeyGen: условия не указаны на странице тарифов, прочитай Terms of Service. Для рекламы и продаж проверяй условия каждого сервиса.</td></tr>
+      <tr><td>Бренды и чужие карточки</td><td>Реальные бренды, логотипы и чужие товары в кадре без договора не использовать.</td></tr>
+      <tr><td>Музыка и голоса</td><td>Чужие песни и голоса реальных людей не копировать. Используй лицензированные треки и голоса из библиотеки сервиса.</td></tr>
+      <tr><td>Личные данные</td><td>Паспорта, карты, документы в нейросети не загружать. Пароли и коды из СМС не вводить в сторонние боты.</td></tr>
+      <tr><td>Лимиты и кредиты</td><td>Лимиты сервисов меняются. Закладывай запас в 30–50% на неудачные попытки.</td></tr>
+      <tr><td>Данные</td><td>Результаты храни у себя. Сервис может удалить историю или закрыть доступ.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <b class="t">Граница, которую не переходим</b>
+    <p>Не создаём видео, где реальный человек делает или говорит то, чего он не делал и не говорил, и не прячем это от зрителя. Для рабочих задач (карточки товаров, ролики, реклама) аватар свой, с согласием или полностью придуманный.</p>
+  </div>
+</section>
+
+<!-- ===================== 9. CHEAT ===================== -->
+<section class="sec" id="cheat" data-s>
+  <div class="kicker">Раздел 9</div>
+  <h2>Шпаргалки и словарь</h2>
+
+  <h3>Паспорт персонажа</h3>
+  <p>Заполни один раз. Вставляй в каждый промт, где нужна героиня.</p>
+  <div class="promptbox"><div class="cap">Шаблон паспорта</div>
+<pre class="prompt" id="p-pass">Woman, <span class="ph">[возраст, например 27]</span> years old, <span class="ph">[типаж: например, East Slavic]</span> look.
+Face: <span class="ph">[форма лица, скулы, подбородок]</span>; eyes <span class="ph">[цвет, форма, особенности]</span>; nose <span class="ph">[форма]</span>; lips <span class="ph">[форма, цвет]</span>; eyebrows <span class="ph">[форма, цвет]</span>; skin <span class="ph">[тон, веснушки, родинки]</span>.
+Hair: <span class="ph">[цвет, длина, причёска]</span>.
+Build: <span class="ph">[рост, телосложение]</span>.
+Signature details: <span class="ph">[1-2 узнаваемые детали: прищепка, серьга, родинка]</span>.
+Default clothes: <span class="ph">[что носит по умолчанию]</span>.
+Style: natural skin texture, real photograph, no airbrushing.</pre>
+    <button class="copy" type="button" data-copy="p-pass">Копировать</button></div>
+
+  <h3>Чек-лист перед генерацией</h3>
+  <ul class="check" data-save="chk-pre">
+    <li><input type="checkbox" id="cl1"><span>Я знаю цель кадра: для чего он.</span></li>
+    <li><input type="checkbox" id="cl2"><span>Промт написан через роль с блоком параметров сервиса.</span></li>
+    <li><input type="checkbox" id="cl3"><span>Исходник чёткий, лицо крупное, ровный свет.</span></li>
+    <li><input type="checkbox" id="cl4"><span>Одно действие и одно движение камеры.</span></li>
+    <li><input type="checkbox" id="cl5"><span>Запреты прописаны в тексте.</span></li>
+    <li><input type="checkbox" id="cl6"><span>Тестовая настройка: короткий клип, дешёвая модель.</span></li>
+    <li><input type="checkbox" id="cl7"><span>Я посмотрела цену попытки в единицах, токенах или кредитах.</span></li>
+  </ul>
+
+  <h3>Официальные страницы для проверки цен</h3>
+  <ul>
+    <li><a href="https://www.krea.ai/pricing" target="_blank" rel="noopener">Krea: тарифы</a></li>
+    <li><a href="https://www.heygen.com/pricing" target="_blank" rel="noopener">HeyGen: тарифы</a></li>
+    <li><a href="https://one.google.com/about/google-ai-plans/" target="_blank" rel="noopener">Google AI: планы</a></li>
+    <li><a href="https://syntx.ai" target="_blank" rel="noopener">Syntx</a> (тарифы внутри профиля)</li>
+    <li><a href="https://elevenlabs.io/pricing" target="_blank" rel="noopener">ElevenLabs: тарифы</a> (страница может перекидывать на ограничение по региону)</li>
+    <li>Grok: тарифы смотри в самом приложении Grok или на сайте xAI</li>
+    <li>ChatGPT: тариф и лимит изображений видны в приложении, справка OpenAI обновляется чаще любых статей</li>
+  </ul>
+
+  <h3>Словарь</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Слово</th><th>Что значит</th></tr></thead>
+    <tbody>
+      <tr><td>Промт</td><td>Текстовое задание нейросети.</td></tr>
+      <tr><td>Промт-роль</td><td>Описание, кем ChatGPT должен быть и как работать, до самой задачи.</td></tr>
+      <tr><td>Референс</td><td>Картинка или видео, на которое нейросеть опирается как на образец.</td></tr>
+      <tr><td>Исходник, стартовый кадр</td><td>Картинка, с которой начинается видео.</td></tr>
+      <tr><td>Image-to-video</td><td>Режим «картинка в видео»: сервис оживляет готовый кадр.</td></tr>
+      <tr><td>Text-to-video</td><td>Видео по тексту, без исходника.</td></tr>
+      <tr><td>Lip-sync</td><td>Синхронизация движения губ со звуком.</td></tr>
+      <tr><td>Motion prompt</td><td>Описание движений и жестов, не сцены.</td></tr>
+      <tr><td>Кредит, токен, единица (compute unit)</td><td>Внутренняя валюта сервиса. Один запрос стоит разное число единиц.</td></tr>
+      <tr><td>Апскейл</td><td>Увеличение разрешения и резкости готового кадра.</td></tr>
+      <tr><td>Дрейф лица</td><td>Лицо постепенно меняется от генерации к генерации.</td></tr>
+      <tr><td>Склейка (cut)</td><td>Резкая смена плана в клипе.</td></tr>
+      <tr><td>Соотношение сторон</td><td>Формат кадра: 9:16 вертикальный, 16:9 горизонтальный, 1:1 квадрат.</td></tr>
+      <tr><td>Негативный промт</td><td>Список того, чего не должно быть. Не везде есть отдельное поле.</td></tr>
+      <tr><td>SynthID</td><td>Невидимая метка Google на сгенерированных материалах.</td></tr>
+      <tr><td>Паспорт персонажа</td><td>Текст с чертами героини, который вставляется в каждый промт.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ===================== 10. PLAN ===================== -->
+<section class="sec" id="plan" data-s>
+  <div class="kicker">Раздел 10</div>
+  <h2>План на 14 дней</h2>
+  <p class="sub">По одному шагу в день. Отмечай выполненное, галочки хранятся в этом браузере.</p>
+  <div class="prog" id="prog">Выполнено: 0 из 14</div>
+  <ul class="check" data-save="chk-plan" data-prog="prog">
+    <li><input type="checkbox" id="d1"><span><strong>День 1.</strong> Прочитай разделы 1 и 2. Посмотри два видео про промтинг. Настрой новый чат ChatGPT с мастер-ролью.</span></li>
+    <li><input type="checkbox" id="d2"><span><strong>День 2.</strong> Тренировка: напиши 5 промтов одной сцены по формуле из шести кубиков. Сравни результаты.</span></li>
+    <li><input type="checkbox" id="d3"><span><strong>День 3.</strong> Заполни паспорт персонажа. Сгенерируй первый портрет в ChatGPT (3–4 варианта), выбери лучший.</span></li>
+    <li><input type="checkbox" id="d4"><span><strong>День 4.</strong> Референс-набор: анфас, три четверти, профиль, в полный рост.</span></li>
+    <li><input type="checkbox" id="d5"><span><strong>День 5.</strong> Пять сцен с той же героиней. Проверь, не плывёт ли лицо. Исправь одним правилом из раздела 3.</span></li>
+    <li><input type="checkbox" id="d6"><span><strong>День 6.</strong> Krea (Free): оживи одну сцену. Один клип, самая короткая длительность.</span></li>
+    <li><input type="checkbox" id="d7"><span><strong>День 7.</strong> Повтори тот же кадр в другой модели Krea. Запиши, какая лучше и почему.</span></li>
+    <li><input type="checkbox" id="d8"><span><strong>День 8.</strong> Syntx (Free): три видеомодели на одном кадре и одном промте. Запиши цену в токенах.</span></li>
+    <li><input type="checkbox" id="d9"><span><strong>День 9.</strong> HeyGen (Free): говорящий аватар из фото, 20 секунд. Проверь русскую речь на слух.</span></li>
+    <li><input type="checkbox" id="d10"><span><strong>День 10.</strong> Gemini: если есть доступ, тест русской реплики на 5 секундах. Результат запиши в «проверено».</span></li>
+    <li><input type="checkbox" id="d11"><span><strong>День 11.</strong> Прочитай раздел 5. Спроси у бота итоговую цену, сравни с ggsel. Купи тариф на месяц только если упёрлась в лимит.</span></li>
+    <li><input type="checkbox" id="d12"><span><strong>День 12.</strong> Полная цепочка: идея, ChatGPT, исходник, сервис, клип. Один готовый ролик 10–20 секунд.</span></li>
+    <li><input type="checkbox" id="d13"><span><strong>День 13.</strong> Разбор ошибок: возьми неудачный результат, прогони через роль-диагност, исправь одной правкой.</span></li>
+    <li><input type="checkbox" id="d14"><span><strong>День 14.</strong> Портфолио из трёх роликов и таблица расходов. Запиши, что работает, что нет, какой сервис остаётся.</span></li>
+  </ul>
+
+  <h3>Ты готова, если умеешь</h3>
+  <ul>
+    <li>Написать роль-промт для ChatGPT и вставить в неё паспорт и параметры сервиса.</li>
+    <li>Сделать реалистичный портрет и держать героиню одной на серии кадров.</li>
+    <li>Оживить кадр в двух сервисах и объяснить, чем они отличаются.</li>
+    <li>Сделать говорящий аватар и найти причину, если он «мёртвый».</li>
+    <li>Купить тариф через посредника и проверить, что всё работает.</li>
+    <li>Пройти диагностику по симптому и не переписывать промт наугад.</li>
+  </ul>
+</section>
+
+<footer>
+  Гайд собран 24.10.2026 по официальным страницам сервисов, справкам и сторонним обзорам. Блок про русскую речь и ElevenLabs добавлен в тот же день по статьям на Хабре, vc.ru и DTF, собственных тестов в нём нет. Цифры помечены по степени надёжности. Сервисы меняются быстро, поэтому в день оплаты открой официальную страницу и сверь цену и лимит. Что не удалось подтвердить, в гайде так и написано.
+</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+  /* copy buttons */
+  $$('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-copy')); if(!el) return;
+      var txt=el.innerText;
+      var done=function(){var o=b.textContent;b.textContent='Скопировано';setTimeout(function(){b.textContent=o},1400)};
+      var fallback=function(){var r=document.createRange();r.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Выделено, нажми копировать';setTimeout(function(){b.textContent='Копировать'},2200)};
+      try{ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fallback)}else{fallback()} }catch(e){fallback()}
+    });
+  });
+
+  /* nav + drawer */
+  var nav=$('#nav'), scrim=$('#scrim');
+  function closeNav(){nav.classList.remove('open');scrim.classList.remove('on')}
+  $('#menuBtn').addEventListener('click',function(){nav.classList.toggle('open');scrim.classList.toggle('on')});
+  scrim.addEventListener('click',closeNav);
+  $$('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var id=a.getAttribute('href').slice(1); var t=document.getElementById(id);
+      if(t){e.preventDefault();if(t.classList.contains('hidden-sec')){clearSearch()}t.scrollIntoView({behavior:'smooth',block:'start'});closeNav()}
+    });
+  });
+  var links=$$('.nav a'); var secs=$$('section.sec, article.svc');
+  function onScroll(){
+    var y=window.scrollY+120, cur=null;
+    secs.forEach(function(s){if(s.offsetTop<=y) cur=s.id});
+    links.forEach(function(l){l.classList.toggle('on',l.getAttribute('href')==='#'+cur)});
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  /* search */
+  var q1=$('#q'), q2=$('#q2'), hits=$('#hits'); var sections=$$('section.sec[data-s]');
+  var texts=sections.map(function(s){return s.textContent.toLowerCase()});
+  function clearSearch(){q1.value='';q2.value='';runSearch('')}
+  function runSearch(v){
+    v=v.trim().toLowerCase(); var n=0;
+    sections.forEach(function(s,i){
+      var ok=v.length<2||texts[i].indexOf(v)>-1;
+      s.classList.toggle('hidden-sec',!ok); if(ok&&v.length>=2) n++;
+      $$('details',s).forEach(function(d){ if(v.length>=2){d.open=d.textContent.toLowerCase().indexOf(v)>-1}});
+    });
+    hits.textContent=v.length<2?'':(n?('Найдено в разделах: '+n):'Ничего не нашлось. Попробуй другое слово.');
+  }
+  function sync(src,dst){return function(){dst.value=src.value;runSearch(src.value)}}
+  q1.addEventListener('input',sync(q1,q2)); q2.addEventListener('input',sync(q2,q1));
+
+  /* theme toggle */
+  var root=document.documentElement;
+  try{var st=localStorage.getItem('aiguide:theme'); if(st) root.setAttribute('data-theme',st)}catch(e){}
+  function curTheme(){var t=root.getAttribute('data-theme'); if(t) return t; return (window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}
+  $$('.themebtn').forEach(function(b){b.addEventListener('click',function(){
+    var n=curTheme()==='dark'?'light':'dark'; root.setAttribute('data-theme',n);
+    try{localStorage.setItem('aiguide:theme',n)}catch(e){}
+  })});
+
+  /* checklists */
+  $$('ul.check[data-save]').forEach(function(ul){
+    var key='aiguide:'+ul.getAttribute('data-save'); var saved={};
+    try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+    var boxes=$$('input[type=checkbox]',ul); var prog=ul.getAttribute('data-prog')?document.getElementById(ul.getAttribute('data-prog')):null;
+    function upd(){ if(prog){prog.textContent='Выполнено: '+boxes.filter(function(b){return b.checked}).length+' из '+boxes.length} }
+    boxes.forEach(function(b){
+      if(saved[b.id]) b.checked=true;
+      b.addEventListener('change',function(){saved[b.id]=b.checked;try{localStorage.setItem(key,JSON.stringify(saved))}catch(e){};upd()});
+    });
+    upd();
+  });
+})();
+</script>
+</body>
+</html>
